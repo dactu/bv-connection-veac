@@ -1,0 +1,64 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+package vea.api.coverage;
+
+// Client gửi thông tin loại vùng phủ cần yêu cầu
+// Server trả về danh sách các vùng phủ CoverageList, mỗi danh sách gồm đầy đủ các loại device đang có
+message Query {
+  Transaction transaction 	    = 1;
+  CoverageTargetType targetType = 2;  // Loại mục tiêu tương ứng khi bắt
+  CoverageHeight height         = 3;  // Độ cao của mục tiêu cần bắt
+}
+
+message QueryAll {
+  Transaction transaction 	    = 1;
+}
+
+// Bản tin chưa danh sách vùng phủ cho từng station
+message CoverageList {
+  Transaction transaction 	  = 1;
+  repeated Coverage coverages = 2;
+}
+
+// Loại khí tài
+enum CoverageStationType {
+  TYPE_UNKNOWN = 0;     // Không dùng, để dự phòng`
+  RADAR = 1;            // Vùng phủ của khí tài radar
+  OE = 2;               // Vùng phủ của khí tài quang điện tử
+  DF = 3;               // Vùng phủ của khí tài trinh sát vô tuyến
+  JAMMER_COM = 4;       // Vùng phủ của khí tài gây nhiễu (dạng gây nhiễu vô tuyến)
+  JAMMER_GPS = 5;       // Vùng phủ của khí tài gây nhiễu (dạng gây nhiễu GPS), 1 thiết bị Jammer sẽ có 2 Coverage khác nhau là COM & GPS
+  EMP = 6;              // Vùng phủ của khí tài chế áp EMP
+}
+
+// Loại mục tiêu máy bay
+enum CoverageTargetType {
+  TARGET_UNKNOWN = 0;   // Không dùng, để dự phòng
+  HELICOPTER = 1;       // Máy bay trực thăng
+  FIXED_WING_UAV = 2;   // UAV cánh bằng
+  QUADCOPTER = 3;       // Dạng máy bay không người lái 4 cánh quạt: drone, flycam,...
+}
+
+// Độ cao mục tiêu cần bắt
+enum CoverageHeight {
+  HEIGHT_UNKNOWN = 0;
+  HEIGHT_50M = 1;
+  HEIGHT_100M = 2;
+  HEIGHT_200M = 3;
+  HEIGHT_500M = 4;
+  HEIGHT_1KM = 5;
+  HEIGHT_2KM = 6;
+  HEIGHT_3KM = 7;
+  HEIGHT_5KM = 8;
+
+}
+
+// Mô tả bản tin
+message Coverage {
+  CoverageStationType type = 1;       // Loại khí tài
+  CoverageTargetType targetType = 2;  // Loại mục tiêu tương ứng khi bắt
+  CoverageHeight height = 3;          // Loại độ cao
+  uint64 stationId = 4;               // ID trạm (id station tương ứng trong bản tin SystemStatus)
+  Location stationLocation = 5;       // Vị trí trạm
+  repeated Location vertex = 6;       // Danh sách các điểm của vùng phủ (mặc định có 360 điểm, vùng phủ sẽ là đường nối liên tục của 360 điểm này)
+}

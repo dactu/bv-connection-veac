@@ -1,0 +1,119 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+import "vea/api/data/target/doa.proto";
+import "vea/api/data/target/doe.proto";
+import "vea/api/data/target/rad.proto";
+import "vea/api/data/target/tlat.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+/**
+ * @ref QS.VEAC.DSP.Đánh giá hiệu năng của mô-đun xử lý thông tin_2022_10_03.pdf
+ * @ref QS.VEA.DSP.Thiết kế thuật toán hợp nhất đa mục tiêu v1.0_2022_02_17.pdf
+ */
+
+message Fused {
+    FusedIdentity identity              = 1;
+    FusedPosition position              = 2;
+    FusedVelocity velocity              = 3;
+    repeated FusedTrajectory trajectory = 4;
+    FusedTrack track                    = 5;
+    FusedClassification classification  = 7;
+    FUSED_TRAJECTORY_STATE trajectory_state = 8;
+}
+
+message FusedList {
+    repeated Fused fused = 1;
+}
+
+message FusedClassification {
+   FUSED_CLASSIFICATION_TYPE type = 1;
+   string description       = 2;
+   double reliability       = 3;
+}
+enum FUSED_CLASSIFICATION_TYPE {
+    FUSED_CLASSIFICATION_TYPE_UNKNOWN     = 0;
+    FUSED_CLASSIFICATION_TYPE_DRONE       = 1;
+    FUSED_CLASSIFICATION_TYPE_UAV_TANCONG   = 2;
+    FUSED_CLASSIFICATION_TYPE_UAV_TRINHSAT  = 3;
+}
+
+enum FUSED_TRAJECTORY_STATE {
+    STATE_NORMAL                          = 0;
+    STATE_LOST_TRAJECTORY                 = 1;
+    STATE_LOST_HEIGHT                     = 2;
+    STATE_LOST_TRAJECTORY_AND_HEIGHT      = 3;
+}
+
+message FusedTrajectory {
+    uint64 timestamp             = 1;    // [ns] Tick timer của mục tiêu
+    FusedIdentity identity       = 2;    // Mảng định danh của mục tiêu
+    FusedPosition position       = 3;    // Mảng vị trí của mục tiêu
+    FusedVelocity velocity       = 4;    // Mảng tốc độ của mục tiêu
+}
+
+message FusedTrack {
+    uint64 track_number     = 1;    // Số hiệu của track (duy nhất)
+    uint64 track_source     = 2;    // Nguồn cung cấp thông tin
+    uint64 track_dbnum      = 3;    // Nhận dạng mục tiêu trong CSDL
+    uint64 timestamp        = 4;    // [ns] Thời gian theo timestamp
+    uint64 birdth_time      = 5;    // [ns] Thời gian bắt đầu
+    uint64 track_time       = 6;    // [ns] Thời gian bắt bám (Từ thời điểm bắt đầu đến hiện tại)
+    uint64 death_time       = 7;    // [ns] Thời gian kết thúc
+    IRRAD_TYPE irrad_type   = 8;    // Loại phát xạ
+    FILTER_TYPE filter_type = 9;    // Loại bộ lọc
+    repeated uint32 track_status    = 10;   // Mảng trạng thái định vị của tracks
+    repeated double predict_states  = 11;   // Trạng thái dự đoán của mục tiêu
+    repeated double update_states   = 12;   // Trạng thái cập nhật của mục tiêu
+    DoubleMatrix predict_covmat     = 13;   // Ma trận tương quan dự đoán
+    DoubleMatrix update_covmat      = 14;   // Ma trận tương quan cập nhật
+    DoubleMatrix process_covmat     = 15;   //
+
+    repeated int32 track_assigns    = 16;   //
+    repeated int32 lock_status      = 17;   //
+    repeated int32 lock_assigns     = 18;   //
+}
+
+
+message FusedIdentity {
+    Identity common      = 1;
+    FusedFeatures features = 2;
+}
+message FusedPosition {
+    Position common             = 1;
+    FusedPositionType pos_type  = 2;
+}
+message FusedVelocity {
+    Velocity common      = 1;
+}
+
+enum FusedPositionType {
+    FusedPositionType_Track = 0;    // Target
+    FusedPositionType_Plot  = 1;    // Plot
+}
+
+enum FusedComponentType {
+    FusedComponentType_NONE = 0;    // Muc tieu khong co thanh phan
+    FusedComponentType_DOA  = 1;    // Co chua thanh phan DOA
+    FusedComponentType_DOE  = 2;    // Co chua thanh phan DOE
+    FusedComponentType_RAD  = 3;    // Co chua thanh phan RAD
+    FusedComponentType_TLAT = 4;    // Co chua thanh phan TLAT
+    FusedComponentType_SIM  = 5;    // Co chua thanh phan Mo phong
+    FusedComponentType_PRED = 6;    // Co chua thanh phan Du doan
+}
+
+message FusedFeatures {
+    repeated uint64 cidx_pnts       = 1;    // Mảng chỉ số đến các mục tiêu thành phần (TCĐT, QĐT và Radar)
+    repeated DOAIdentity iden_doa   = 2;    // Định danh của mục tiêu DOA
+    repeated DOEIdentity iden_doe   = 3;    // Định danh của mục tiêu QĐT
+    repeated RADIdentity iden_rad   = 4;    // Định danh của mục tiêu Radar
+    repeated TLATIdentity iden_tlat = 5;    // Định danh của mục tiêu TLAT
+
+    repeated int32 fused_numbers    = 6;    // Mảng chỉ số đến các mục tiêu thành phần (TCĐT, QĐT và Radar)
+    repeated DOA doa_target         = 7;    // Mục tiêu DOA
+    repeated DOE doe_target         = 8;    // Mục tiêu QĐT
+    repeated RAD rad_target         = 9;    // Mục tiêu Radar
+    repeated TLAT tlat_target       = 10;   // Mục tiêu TLAT
+    repeated FusedComponentType component_type = 11;    // Danh sach thanh phan cua muc tieu hop nhat
+}

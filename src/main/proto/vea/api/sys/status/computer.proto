@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message Computer {
+    Transaction transaction  = 1;
+
+    uint64 id                = 2;
+    bool is_connected        = 3;
+    uint64 uptime            = 4; // Uptime in seconds
+    
+    string description       = 9;  // Device description
+}

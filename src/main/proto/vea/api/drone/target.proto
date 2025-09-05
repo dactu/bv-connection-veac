@@ -1,0 +1,19 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+package vea.api.drone;
+option go_package = "vea/api/drone";
+
+message Target {
+  string serial_number = 1;
+  float	 longitude     = 2;
+  float	 latitude      = 3;
+  float  altitude      = 4;
+  string product_name = 13;
+  uint64 srv_ts = 15;
+  repeated Location trajectory = 16;
+}
+
+message TargetList {
+    repeated Target list = 1;
+}
+

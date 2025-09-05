@@ -1,0 +1,31 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message DOE {
+    DOEIdentity identity = 1;
+    DOEPosition position = 2;
+    DOEVelocity velocity = 3;
+
+    Sensor sensor        = 10;
+}
+
+message DOEIdentity {
+    Identity common      = 1;
+    DOEFeatures features = 2;
+}
+message DOEPosition {
+    Position common         = 1;
+    repeated double coordp  = 2;
+    double distance         = 3;
+    double azimuth          = 4;
+    double elevation        = 5;
+}
+message DOEVelocity {
+    Velocity common      = 1;
+}
+
+message DOEFeatures {
+}

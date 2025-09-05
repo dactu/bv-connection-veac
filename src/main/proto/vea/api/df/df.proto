@@ -1,0 +1,28 @@
+syntax = "proto3";
+package vea.api.df;
+import "vea/api/common.proto";
+option go_package = "vea/api/df";
+
+enum DfTrackState {
+  DF_TRACK_FALSE_ALARM = 0;
+  DF_TRACK_TENTATIVE = 1;
+  DF_TRACK_NORMAL = 2;
+  DF_TRACK_NOIRRAD = 3;
+  DF_TRACK_INGRAVE = 4;
+  DF_TRACK_DELETE = 5;
+}
+
+message DF {
+  uint64 id = 1;
+  uint64 fc_begin = 2;
+  uint64 fc_end = 3;
+  uint64 ts = 4;
+  double azimuth = 5;
+  double elevation = 6;
+  DfTrackState state = 7;
+}
+
+message DfList {
+  vea.api.DataSource source = 1;   // Data source
+  repeated DF df_list       = 2;
+}

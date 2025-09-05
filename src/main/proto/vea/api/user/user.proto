@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+package vea.api.user;
+option go_package = "vea/api/user";
+
+message User {
+  Transaction transaction     = 1;
+  uint64 id                   = 2; // Id cua User (duy nhat trong he thong)
+  string username             = 3;
+  bool is_authenticated       = 7;  // Only for authentication response
+}

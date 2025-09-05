@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/user/user.proto";
+package vea.api.user;
+option go_package = "vea/api/user";
+
+// Ui authenticate with Server
+// Server reply a User message
+message Authenticate {
+  Transaction transaction = 1;
+  string username       = 2;
+  string password       = 3;
+}

@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message RAD {
+    RADIdentity identity = 1;
+    RADPosition position = 2;
+    RADVelocity velocity = 3;
+}
+
+message RADIdentity {
+    Identity common      = 1;
+    RADFeatures features = 2;
+}
+message RADPosition {
+    Position common         = 1;
+    repeated double coordp  = 2;
+    double distance         = 3;
+    double azimuth          = 4;
+    double elevation        = 5;
+}
+
+message RADVelocity {
+    Velocity common      = 1;
+}
+
+message RADFeatures {
+  uint32 category = 1;
+  bool manual_set_category = 2;
+  bool selected = 3;
+  RadarType type = 4;
+}
+
+enum RADTargIden {
+    RADTargIden_NONE    = 0;
+    RADTargIden_DRONE   = 2;
+}

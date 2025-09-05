@@ -1,0 +1,13 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message Generic {
+    Identity identity = 1;
+    Position position = 2;
+    Velocity velocity = 3;
+
+    Sensor sensor        = 10;
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+/**
+ * @ref QS.VEA.DSP.Thiết kế thuật toán định hướng nguồn phát tín hiệu v1.2_2021_12_16.pdf
+ */
+
+message BDW {
+    uint64       bid  = 1;    // Định danh (block ID) của BDWs
+    uint64       sid  = 2;    // Định danh của sector (sector ID)
+    uint64       toa  = 3;    // [ns] Thời gian đến của tín hiệu
+    uint64       tod  = 4;    // [ns] Thời gian kết thúc tín hiệu
+    uint64       pw   = 5;    // [ns] Độ dài của tín hiệu = tod - toa
+    double       fc   = 6;    // [hz] Tần số trung tâm của tín hiệu
+    double       bw   = 7;    // [hz] Băng thông của tín hiệu
+    double       amp  = 8;    // [dBm] Công suất của tín hiệu
+    uint32 stream_id  = 9;    // Stream Id
+    double  noise     = 10;
+    double  snr       = 11;
+    bytes       xiq   = 20;    // Các mẫu IQs từ TOA đến TOD
+}

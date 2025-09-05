@@ -1,0 +1,17 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/doe.proto";
+package vea.api.optical_electronic;
+option go_package = "vea/api/optical_electronic";
+
+message OETarget {
+    uint64 id                    = 1;
+
+    vea.api.data.target.DOE core = 30;
+}
+
+message OETargetList {
+    uint32 station_id      = 1;
+    uint32 device_id       = 2;
+    repeated OETarget list = 3;
+}

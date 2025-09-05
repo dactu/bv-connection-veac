@@ -1,0 +1,62 @@
+app:
+  name: bv-system
+  environment: dev
+
+network:
+  mainAddress: 10.10.0.1
+  dp:
+    - 10.10.0.21
+    - 10.10.0.22
+  grpc:
+    port: 50051
+    timeoutMs: 10000
+
+security:
+  empGrpcAddress: 10.10.0.50:8081
+  verify:
+    username: admin
+    # KHÔNG commit mật khẩu thật; override bằng ENV: SECURITY_VERIFY_PASSWORD
+    password: ${SECURITY_VERIFY_PASSWORD:changeme}
+
+features:
+  enableCaptureData: true
+  enableLog:
+    bv5Target: true
+    bmsTarget: false
+    command: true
+    empJammer: true
+    df: false
+
+ranges:
+  df: 3000
+  emp: 2000
+  sendTarget: 3500
+  openAngleDf: 60
+  turnOffDf: false
+  turnOffVq: false
+
+bv:
+  modules:
+    vea1:
+      alias: vea1
+      ip: 192.168.1.10
+      port: 3001
+      lat: 21.0278
+      lon: 105.8342
+      jmName: JM-VEA1
+      empName: EMP-VEA1
+      rangeJammer: 1500
+    vea2:
+      alias: vea2
+      ip: 192.168.1.11
+      port: 3002
+      lat: 21.0378
+      lon: 105.8442
+      jmName: JM-VEA2
+      empName: EMP-VEA2
+      rangeJammer: 2000
+
+telemetry:
+  udpPort: 9001
+  bmsLat: 21.03
+  bmsLon: 105.85

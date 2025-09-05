@@ -1,0 +1,71 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+import "vea/api/data/target/doa.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message TLAT {
+    TLATIdentity identity = 1;
+    TLATPosition position = 2;
+    TLATVelocity velocity = 3;
+    TLATTrack track       = 4;
+    repeated TLATTrajectory trajectory= 5;
+
+    Sensor sensor        = 10;  // Vi tri goc toa do xyz, dae
+}
+
+message TLATIdentity {
+    Identity common      = 1;
+    TLATFeatures features = 2;
+}
+message TLATPosition {
+    double latitude         = 1;    // [deg] Latitude của mục tiêu
+    double longitude        = 2;    // [deg] Longitude của mục tiêu
+    double altitude         = 3;    // [deg] Altitude của mục tiêu
+    double coord_x          = 4;    // [m] Tọa độ mục tiêu theo phương X
+    double coord_y          = 5;    // [m] Tọa độ mục tiêu theo phương Y
+    double coord_z          = 6;    // [m] Tọa độ mục tiêu theo phương Z
+    double azimuth          = 7;   // [deg] Phương vị từ trạm tham chiếu
+    double elevation        = 8;   // [deg] Góc tà từ trạm tham chiếu
+    double distance         = 9;   // [m] Khoảng cách từ trạm tham chiếu
+
+    Position common     = 10;
+}
+
+message TLATVelocity {
+    double airspeed         = 1;    // [m/s] Tốc độ mục tiêu (theo giá trị)
+    double heading          = 2;    // [deg] Hướng di chuyển theo phương vị
+    double vertical         = 3;    // [deg] Hướng di chuyển theo góc tà
+    double veloc_x          = 4;    // [m/s] Tốc độ mục tiêu theo phương X
+    double veloc_y          = 5;    // [m/s] Tốc độ mục tiêu theo phương Y
+    double veloc_z          = 6;    // [m/s] Tốc độ mục tiêu theo phương Z
+}
+
+message TLATFeatures {
+    repeated DOAIdentity ant_idens  = 2;    // Định danh của những trạm ăng-ten được sử dụng để định vị ra mục tiêu
+}
+
+message TLATTrajectory {
+    uint64 timestamp        = 1;    // [ns] Tick timer của mục tiêu
+    TLATIdentity identity    = 2;    // Mảng định danh của mục tiêu
+    TLATPosition position    = 3;    // Mảng vị trí của mục tiêu
+    TLATVelocity velocity    = 4;    // Mảng tốc độ của mục tiêu
+}
+
+message TLATTrack {
+    uint64 track_number     = 1;    // Số hiệu của track (duy nhất)
+    uint64 track_source     = 2;    // Nguồn cung cấp thông tin
+    uint64 track_dbnum      = 3;    // Nhận dạng mục tiêu trong CSDL
+    uint64 timestamp        = 4;    // [ns] Thời gian theo timestamp
+    uint64 birdth_time      = 5;    // [ns] Thời gian bắt đầu
+    uint64 track_time       = 6;    // [ns] Thời gian bắt bám (Từ thời điểm bắt đầu đến hiện tại)
+    uint64 death_time       = 7;    // [ns] Thời gian kết thúc
+    IRRAD_TYPE irrad_type   = 8;    // Loại phát xạ
+    FILTER_TYPE filter_type = 9;    // Loại bộ lọc
+    repeated uint32 track_status    = 10;   // Mảng trạng thái định vị của tracks
+    repeated double predict_states  = 11;   // Trạng thái dự đoán của mục tiêu
+    repeated double update_states   = 12;   // Trạng thái cập nhật của mục tiêu
+    repeated double predict_covmat     = 13;   // Ma trận tương quan dự đoán
+    repeated double update_covmat      = 14;   // Ma trận tương quan cập nhật
+}

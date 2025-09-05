@@ -1,0 +1,14 @@
+syntax = "proto3";
+import "vea/api/fusion/target.proto";
+import "vea/api/common.proto";
+
+package vea.api.fusion;
+
+option go_package = "vea/api/fusion";
+
+
+// Response from server 
+message TargetList {
+    repeated Target target = 1;
+    Transaction transaction    = 2;
+}

@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package connection.status;
+
+
+// san sang chien dau
+enum CSOperator {
+  OP_UNKNOWN 	= 0; // operator unknown
+  OP_SSCD    	= 1; // operator sscd
+  OP_CSSCD 	    = 2;
+}
+
+// che do hoat dong BV5/radar
+enum CSMode {
+    MO_UNKNOWN  = 0;
+    MO_CD       = 1; // chien dau
+    MO_HL       = 2; // huan luyen
+    MO_KTCN     = 3; // kiem tra chuc nang
+}
+// che do hoat dong QDT
+enum CSModeQDT {
+    QDT_UNKNOWN  = 0;
+    QDT_Ngay     = 1; // ngay
+    QDT_Nhiet    = 2; // nhiet
+}
+
+enum CSModeQDTIR {
+    IR_UNKNOWN = 0;
+    IR_WHITE   = 1;
+    IR_BLACK   = 2;
+    IR_COLOR   = 3;
+}
+
+enum TargetTrackingState {
+    TS_UNKNOWN          = 0;
+    TS_NO_TRACKING      = 1;
+    TS_WAIT_TRACKING    = 2;
+    TS_TRACKING         = 3;
+}
+
+// position
+message GeodeticPosition {
+	double longitude = 1;
+	double latitude = 2;
+	double altitude = 3;
+}
+
+// khoi nguon va ma loi
+enum RadarComponent {
+    RC_UNKNOWN                  = 0;
+    RC_POWER_UNIT               = 1;
+    RC_DATA_PROCESSING_UNIT     = 2;
+    RC_TRANSCEIVER_UNIT         = 3;
+    RC_SIGNAL_PROCESSING_UNIT   = 4;
+}
+
+message RadarSubComponentInfo {
+    RadarComponent radarComponent     = 1;
+    uint32 errorCode                = 2;
+    string errorDescription         = 3;
+}
+
+enum QDTSource{
+    EOS_SOURCE_UNKNOWN = 0;
+    EOS_SOURCE_BV5     = 1;
+    EOS_SOURCE_SRSLRA  = 2;
+}
+
+message CurrentDeviceAngle {
+    double currentAzimuth     = 1; // pvi
+    double currentElevation   = 2; // va goc ta hien tai
+}
+
+message QDTAngleVelocity {
+    double panAngle         = 1;  // goc pan hien tai
+    double tiltAngle        = 2;  // goc tilt hien tai
+}
+
+enum QDTComponent{
+    EOS_CP_UNKNOWN  = 0;
+    EOS_CP_CAM      = 1; // cam ngay/ nhiet
+    EOS_CP_LEN      = 2; // ong kinh
+    EOS_CP_GIMBAL   = 3; // gimbal quay/quet
+    EOS_CP_LASER    = 4; // laser
+    EOS_CP_VE       = 5; // mach XL chinh VE
+}
+
+message QDTSubComponentInfo {
+    QDTComponent qdtComponent   = 1;
+    bool status                 = 2; // true: ON, false: OFF
+}
+
+////////================================================================================
+message CSSensorConnection {
+    repeated BV5Infor bv5Infor      = 1;
+    repeated RadarInfor radarInfor  = 2;
+    repeated QDTInfor qdtInfor      = 3;
+}
+
+//BV5Infor
+message BV5Infor {
+    string name                 = 1;
+    CSOperator operator         = 2;
+    CSMode mode                 = 3;
+    GeodeticPosition position   = 4; // position of server BV5
+}
+
+//Radar Infor
+message RadarInfor {
+    string name                                     = 1;
+    CSOperator operator                             = 2;
+    CSMode mode                                     = 3;
+    GeodeticPosition position                       = 4;
+    int32 scanSpeed                                 = 5; // toc do quet
+    int32 power                                     = 6; // cong suat phat
+    double rangeCG                                  = 7; // cu ly canh gioi
+
+    repeated RadarSubComponentInfo subComponentInfos = 15;  // trang thai cac thanh phan
+}
+
+// QDT Infor
+message QDTInfor {
+    string name                             = 1;
+    QDTSource eosSource                     = 2;
+    CSOperator operator                     = 3;
+    CSModeQDT mode                          = 4;
+    CSModeQDTIR modeIR                      = 5;
+    CurrentDeviceAngle currentDeviceAngle   = 6;
+    int32 zoomLevel                         = 7;
+    double distanceMeasure                  = 8;  //Ket qua do xa laser (-1 neu ko co gia tri)
+    GeodeticPosition position               = 9;  //Toa do GPS
+    TargetTrackingState trackingState       = 10; //Trang thai bat bam muc tieu
+    QDTAngleVelocity angleVelocity          = 11; //Van toc goc pan va tilt hien tai
+
+    repeated QDTSubComponentInfo subComponentInfos = 15;  // trang thai cac thanh phan
+}

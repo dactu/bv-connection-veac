@@ -1,0 +1,10 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+package vea.api.connection;
+option go_package = "vea/api/connection";
+
+message Heartbeat {
+  Transaction transaction = 1;
+  // semver 2.0.0
+  string version        = 2;
+}

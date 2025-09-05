@@ -1,0 +1,19 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/optical_electronic/target.proto";
+import "vea/api/radar/target.proto";
+import "vea/api/data/target/fused.proto";
+
+package vea.api.fusion;
+option go_package = "vea/api/fusion";
+
+// @author: khainv9
+
+
+message FusionTarget {
+    vea.api.data.target.Fused core = 30;
+}
+
+message Target {    
+    FusionTarget fusion_target = 40;
+}

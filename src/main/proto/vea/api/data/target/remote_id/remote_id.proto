@@ -1,0 +1,305 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+import "google/protobuf/any.proto";
+package vea.api.data.target.remote_id;
+option go_package = "vea/api/data/target/remote_id";
+
+// Follow github.com/opendroneid/opendroneid-core-c/blob/master/libopendroneid/opendroneid.h
+
+message RemoteId {
+  Source source     = 1;
+  Protocol protocol = 2;
+  UAS uas           = 3;
+  Extra extra       = 4;
+}
+
+message UAS {
+  repeated BasicId basic_id = 1;
+  Location location         = 2;
+  repeated Auth auth        = 3;
+  SelfId self_id            = 4;
+  SystemInfo system_info    = 5;
+  OperatorId operator_id = 6;
+}
+
+message OperatorId {
+  ODID_OPERATOR_ID_TYPE id_type = 1;
+  string id = 2;
+}
+
+message SystemInfo {
+  ODID_OPERATOR_LOCATION_TYPE operator_location_type = 1;
+  ODID_CLASSIFICATION_TYPE classification_type = 2;
+  // Invalid, No Value, or Unknown: 0 deg (both Lat/Lon)
+  double operator_latitude = 3;
+  // Invalid, No Value, or Unknown: 0 deg (both Lat/Lon)
+  double operator_longitude = 4;
+  // Default 1
+  int32 area_count = 5;
+  // meter. Default 0
+  int32 area_radius = 6;
+  // meter. Invalid, No Value, or Unknown: -1000m
+  float area_ceiling = 7;
+  // meter. Invalid, No Value, or Unknown: -1000m
+  float area_floor = 8;
+  // Only filled if ClassificationType = ODID_CLASSIFICATION_TYPE_EU
+  ODID_CATEGORY_EU category_eu = 9;
+  // Only filled if ClassificationType = ODID_CLASSIFICATION_TYPE_EU
+  ODID_CLASS_EU class_eu = 10;
+  // meter (WGS84-HAE). Invalid, No Value, or Unknown: -1000m
+  float operator_altitude_geo = 11;
+  // Relative to 00:00:00 01/01/2019 UTC/Unix Time
+  uint64 timestamp = 12;
+}
+
+message SelfId {
+  ODID_DESC_TYPE desc_type = 1;
+  string description = 2;
+}
+
+message Auth {
+    ODID_AUTH auth_type = 1;
+    // Relative to 00:00:00 01/01/2019 UTC/Unix Time
+    uint64 timestamp = 2;
+    string data = 3;
+}
+
+message Location {
+    ODID_STATUS status = 1;
+    // Degrees. 0 <= x < 360. Route course based on true North. Invalid, No Value, or Unknown: 361deg
+    float direction = 2;
+    // m/s. Positive only. Invalid, No Value, or Unknown: 255m/s. If speed is >= 254.25 m/s: 254.25m/s
+    float speed_horizontal = 3;
+    // m/s. Invalid, No Value, or Unknown: 63m/s. If speed is >= 62m/s: 62m/s
+    float speed_vertical   = 4;
+    // Invalid, No Value, or Unknown: 0 deg (both Lat/Lon)
+    double latitude = 5;
+    // Invalid, No Value, or Unknown: 0 deg (both Lat/Lon)
+    double longitude = 6;
+    // meter (Ref 29.92 inHg, 1013.24 mb). Invalid, No Value, or Unknown: -1000m
+    float altitude_baro = 7;
+    // meter (WGS84-HAE). Invalid, No Value, or Unknown: -1000m
+    float altitude_geo = 8;
+    //
+    ODID_HEIGHT_REF height_type = 9;
+    // meter. Invalid, No Value, or Unknown: -1000m
+    float height = 10;
+
+    ODID_HOR_ACC horizontal_accuracy = 11;
+    ODID_VER_ACC vertical_accuracy = 12;
+    ODID_VER_ACC baro_accuracy = 13;
+    ODID_SPEED_ACC speed_accuracy = 14;
+    ODID_TIME_ACC timestamp_accuracy = 15;
+    // nanoseconds after the full hour relative to UTC. Invalid, No Value, or Unknown: 0xFFFF
+    uint64 timestamp = 16;
+}
+
+enum ODID_OPERATOR_ID_TYPE {
+  ODID_OPERATOR_ID = 0;
+  // 1 to 200 reserved
+  // 201 to 255 available for private use
+};
+
+enum ODID_OPERATOR_LOCATION_TYPE {
+  ODID_OPERATOR_LOCATION_TYPE_TAKEOFF = 0;   // Takeoff location and altitude
+  ODID_OPERATOR_LOCATION_TYPE_LIVE_GNSS = 1; // Dynamic/Live location and altitude
+  ODID_OPERATOR_LOCATION_TYPE_FIXED = 2;     // Fixed location and altitude
+  // 3 to 255 reserved
+};
+
+enum ODID_CLASSIFICATION_TYPE {
+  ODID_CLASSIFICATION_TYPE_UNDECLARED = 0;
+  ODID_CLASSIFICATION_TYPE_EU = 1; // European Union
+  // 2 to 7 reserved
+};
+
+enum ODID_CATEGORY_EU {
+  ODID_CATEGORY_EU_UNDECLARED = 0;
+  ODID_CATEGORY_EU_OPEN = 1;
+  ODID_CATEGORY_EU_SPECIFIC = 2;
+  ODID_CATEGORY_EU_CERTIFIED = 3;
+  // 4 to 15 reserved
+};
+
+enum ODID_CLASS_EU {
+  ODID_CLASS_EU_UNDECLARED = 0;
+  ODID_CLASS_EU_CLASS_0 = 1;
+  ODID_CLASS_EU_CLASS_1 = 2;
+  ODID_CLASS_EU_CLASS_2 = 3;
+  ODID_CLASS_EU_CLASS_3 = 4;
+  ODID_CLASS_EU_CLASS_4 = 5;
+  ODID_CLASS_EU_CLASS_5 = 6;
+  ODID_CLASS_EU_CLASS_6 = 7;
+  // 8 to 15 reserved
+};
+
+enum ODID_DESC_TYPE {
+  ODID_DESC_TYPE_TEXT = 0;            // General free-form information text
+  ODID_DESC_TYPE_EMERGENCY = 1;       // Additional clarification when ODID_status == EMERGENCY
+  ODID_DESC_TYPE_EXTENDED_STATUS = 2; // Additional clarification when ODID_status != EMERGENCY
+  // 3 to 200 reserved
+  // 201 to 255 available for private use
+};
+
+enum ODID_AUTH {
+  ODID_AUTH_NONE = 0;
+  ODID_AUTH_UAS_ID_SIGNATURE = 1; // Unmanned Aircraft System
+  ODID_AUTH_OPERATOR_ID_SIGNATURE = 2;
+  ODID_AUTH_MESSAGE_SET_SIGNATURE = 3;
+  ODID_AUTH_NETWORK_REMOTE_ID = 4; // Authentication provided by Network Remote ID
+  ODID_AUTH_SPECIFIC_AUTHENTICATION = 5; // Specific auth method. The exact authentication type is indicated by the
+  // first byte of AuthData and these type values are managed by ICAO.
+  // 0 is reserved. 1 - 224 are managed by ICAO. 225 - 255 are available for
+  // private experimental usage only
+  // 6 to 9 reserved for the specification. 0xA to 0xF reserved for private use
+};
+
+enum ODID_HOR_ACC {
+  ODID_HOR_ACC_UNKNOWN = 0;
+  ODID_HOR_ACC_10NM = 1;      // Nautical Miles. 18.52 km
+  ODID_HOR_ACC_4NM = 2;       // 7.408 km
+  ODID_HOR_ACC_2NM = 3;       // 3.704 km
+  ODID_HOR_ACC_1NM = 4;       // 1.852 km
+  ODID_HOR_ACC_0_5NM = 5;     // 926 m
+  ODID_HOR_ACC_0_3NM = 6;     // 555.6 m
+  ODID_HOR_ACC_0_1NM = 7;     // 185.2 m
+  ODID_HOR_ACC_0_05NM = 8;    // 92.6 m
+  ODID_HOR_ACC_30_METER = 9;
+  ODID_HOR_ACC_10_METER = 10;
+  ODID_HOR_ACC_3_METER = 11;
+  ODID_HOR_ACC_1_METER = 12;
+  // 13 to 15 reserved
+};
+
+enum ODID_VER_ACC {
+  ODID_VER_ACC_UNKNOWN = 0;
+  ODID_VER_ACC_150_METER = 1;
+  ODID_VER_ACC_45_METER = 2;
+  ODID_VER_ACC_25_METER = 3;
+  ODID_VER_ACC_10_METER = 4;
+  ODID_VER_ACC_3_METER = 5;
+  ODID_VER_ACC_1_METER = 6;
+  // 7 to 15 reserved
+};
+
+enum ODID_SPEED_ACC {
+  ODID_SPEED_ACC_UNKNOWN = 0;
+  ODID_SPEED_ACC_10_METERS_PER_SECOND = 1;
+  ODID_SPEED_ACC_3_METERS_PER_SECOND = 2;
+  ODID_SPEED_ACC_1_METERS_PER_SECOND = 3;
+  ODID_SPEED_ACC_0_3_METERS_PER_SECOND = 4;
+  // 5 to 15 reserved
+};
+
+enum ODID_TIME_ACC {
+  ODID_TIME_ACC_UNKNOWN = 0;
+  ODID_TIME_ACC_0_1_SECOND = 1;
+  ODID_TIME_ACC_0_2_SECOND = 2;
+  ODID_TIME_ACC_0_3_SECOND = 3;
+  ODID_TIME_ACC_0_4_SECOND = 4;
+  ODID_TIME_ACC_0_5_SECOND = 5;
+  ODID_TIME_ACC_0_6_SECOND = 6;
+  ODID_TIME_ACC_0_7_SECOND = 7;
+  ODID_TIME_ACC_0_8_SECOND = 8;
+  ODID_TIME_ACC_0_9_SECOND = 9;
+  ODID_TIME_ACC_1_0_SECOND = 10;
+  ODID_TIME_ACC_1_1_SECOND = 11;
+  ODID_TIME_ACC_1_2_SECOND = 12;
+  ODID_TIME_ACC_1_3_SECOND = 13;
+  ODID_TIME_ACC_1_4_SECOND = 14;
+  ODID_TIME_ACC_1_5_SECOND = 15;
+};
+
+enum ODID_HEIGHT_REF {
+  ODID_HEIGHT_REF_OVER_TAKEOFF = 0;
+  ODID_HEIGHT_REF_OVER_GROUND = 1;
+}
+
+enum ODID_STATUS {
+  ODID_STATUS_UNDECLARED = 0;
+  ODID_STATUS_GROUND = 1;
+  ODID_STATUS_AIRBORNE = 2;
+  ODID_STATUS_EMERGENCY = 3;
+  ODID_STATUS_REMOTE_ID_SYSTEM_FAILURE = 4;
+}
+
+message BasicId {
+  ODID_UATYPE ua_type = 1;
+  ODID_IDTYPE id_type = 2;
+  string uas_id  = 3;
+}
+enum ODID_IDTYPE {
+  ODID_IDTYPE_NONE = 0;
+  ODID_IDTYPE_SERIAL_NUMBER = 1;
+  // Civil Aviation Authority
+  ODID_IDTYPE_CAA_REGISTRATION_ID = 2;
+  // UAS (Unmanned Aircraft System) Traffic Management
+  ODID_IDTYPE_UTM_ASSIGNED_UUID = 3;
+  // The exact id type is specified by the first byte of UASID and these type
+  // values are managed by ICAO. 0 is reserved. 1 - 224 are managed by ICAO.
+  // 225 - 255 are available for private experimental usage only
+  ODID_IDTYPE_SPECIFIC_SESSION_ID = 4;
+}
+enum ODID_UATYPE {
+  ODID_UATYPE_NONE = 0;
+  ODID_UATYPE_AEROPLANE = 1; // Fixed wing
+  ODID_UATYPE_HELICOPTER_OR_MULTIROTOR = 2;
+  ODID_UATYPE_GYROPLANE = 3;
+  ODID_UATYPE_HYBRID_LIFT = 4; // Fixed wing aircraft that can take off vertically
+  ODID_UATYPE_ORNITHOPTER = 5;
+  ODID_UATYPE_GLIDER = 6;
+  ODID_UATYPE_KITE = 7;
+  ODID_UATYPE_FREE_BALLOON = 8;
+  ODID_UATYPE_CAPTIVE_BALLOON = 9;
+  ODID_UATYPE_AIRSHIP = 10; // Such as a blimp
+  ODID_UATYPE_FREE_FALL_PARACHUTE = 11; // Unpowered
+  ODID_UATYPE_ROCKET = 12;
+  ODID_UATYPE_TETHERED_POWERED_AIRCRAFT = 13;
+  ODID_UATYPE_GROUND_OBSTACLE = 14;
+  ODID_UATYPE_OTHER = 15;
+}
+
+message Extra {
+  // manufacturer like for instance DJI
+  string manufacturer = 1;
+  // The model like Mavic 3
+  string model        = 2;
+  // Type of the drone like multirotor or fixed wing
+  string drone_type   = 3;
+  // The application where the drone is used for like industrial or consumer
+  string application  = 4;
+  // The Maximum Take-off Weight in kg
+  float weight        = 5;
+  // the dimensions of the drone in mm. Ex 348 x 291 x 108
+  string dimensions   = 6;
+}
+
+message Protocol {
+  // The RSSI of the received Remote ID packet.
+  float rssi            = 1;
+  // The channel on which the Remote ID packet is received.
+  // It is zero for BLE Remote ID signals, otherwise it is the WiFi channel number
+  int32 channel         = 2;
+  // The epoch time stamp of the message in nanoseconds
+  uint64 timestamp      = 3;
+  // The MAC address that broadcast the Remote ID packet
+  string mac_address    = 4;
+  // The remote ID type. It can be BLE legacy, BLE long range, WiFi NaN or WiFi beacon
+  ProtocolType protocol_type = 5;
+}
+
+enum ProtocolType {
+    ProtocolType_None           = 0;
+    ProtocolType_BLE_LEGACY     = 1;
+    ProtocolType_BLE_LONG_RANGE = 2;
+    ProtocolType_WIFI_NAN       = 3;
+    ProtocolType_WIFI_BEACON    = 4;
+}
+
+message Source {
+  string id           = 1;  // Source Id. Ex '900'
+  string description  = 2;  // Description. Ex 'ds230'
+  string version      = 3;  // Version. Ex '20220509-1035'
+  string status       = 4;  // 'normal', 'invalid license'
+}

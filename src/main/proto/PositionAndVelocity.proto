@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package com.vht.bms.messages;
+
+option java_package = "com.vht.bms.messages";
+option java_outer_classname = "PositionAndVelocityProto";
+
+enum Dimension {
+	DIMENSION_2D = 0;
+	DIMENSION_3D = 1;
+}
+
+// Note: All units are standardized. I.e: m/s (instead of knots), radian (instead of degree), meter (instead of nautical-miles)
+message GeodeticPosition {
+	float longitude = 1;
+	float latitude = 2;
+	float altitude = 3;
+}
+
+message CartesianPosition {
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}
+
+message PolarPosition {
+	float range = 1;
+	float azimuth = 2;
+	float elevation = 3;
+}
+
+message CartesianVelocity {
+	float vx = 1;
+	float vy = 2;
+	float vz = 3;
+}
+
+message PolarVelocity {
+	float speed = 1;
+	float heading = 2;
+}

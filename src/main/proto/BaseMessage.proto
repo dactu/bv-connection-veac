@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package com.vht.bms.messages;
+
+option java_package = "com.vht.bms.messages";
+option java_outer_classname="BaseMessageProto";
+
+import "google/protobuf/any.proto";
+
+/**
+* Abstract message to contain other message-types
+*/
+message BaseMessage {
+	int32 message_type = 1;						// A type code to identify embedded message type
+    google.protobuf.Any message_detail = 2;		// An embedded message which contain real details
+
+    // Optional details
+    string sender_host_id = 3;
+    int32 sender_service_id = 4;
+}

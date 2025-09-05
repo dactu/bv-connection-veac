@@ -1,0 +1,112 @@
+syntax = "proto3";
+
+package storage;
+
+import "SearchOptions.proto";
+import "PatchOptions.proto";
+
+
+enum GeoInfoType {
+    GT_UNKNOWN  = 0;
+    GT_RASTER   = 1;
+    GT_VECTOR   = 2;
+}
+
+message GeoInfo {
+    string  ID          = 1;//`json:"id" bson:"_id"`
+    string  GeoFileID   = 2;//`json:"geo_file_id" bson:"geo_file_id"`
+    string  GeoInfo     = 3;//`json:"geo_info" bson:"geo_info"`
+
+    // Audit
+    uint64  CreatedAt   = 4;//`json:"created_at" bson:"created_at" audit:"createdAt"`
+    uint64  UpdatedAt   = 5;//`json:"updated_at" bson:"updated_at" audit:"updatedAt"`
+    string  CreatedBy   = 6;//`json:"created_by" bson:"created_by"`
+    string  UpdatedBy   = 7;//`json:"updated_by" bson:"updated_by"`
+}
+
+message File {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Name = 2;//`json:"name" bson:"name"`
+    string ContentType = 3;//`json:"content_type" bson:"content_type"`
+    uint64 Size = 4;//`json:"size" bson:"size"`
+    //Thong tin Audit
+    uint64 CreatedAt = 5;//`json:"created_at" bson:"created_at" audit:"createdAt"`
+    uint64 UpdatedAt = 6;//`json:"updated_at" bson:"updated_at" audit:"updatedAt"`
+    string CreatedBy = 7;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 8;//`json:"updated_by" bson:"updated_by"`
+}
+
+message FileChunk {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Data = 2;//`json:"data" bson:"data"`
+}
+
+message FileData {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string FileId = 2;//`json:"file_id" bson:"file_id"`
+    uint32 ChunkOrder = 3;//`json:"chunk_order" bson:"chunk_order"`
+    string ChunkId = 4;//`json:"chunk_id" bson:"chunk_id"`
+}
+
+message Client {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Ip = 2;//`json:"ip" bson:"ip" index:"unique"`
+    //Thong tin Audit
+    uint64 CreatedAt = 5;//`json:"created_at" bson:"created_at" audit:"createdAt"`
+    uint64 UpdatedAt = 6;//`json:"updated_at" bson:"updated_at" audit:"updatedAt"`
+    string CreatedBy = 7;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 8;//`json:"updated_by" bson:"updated_by"`
+}
+
+message Video {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Ip = 2;//`json:"ip" bson:"ip"`
+    uint64 StartTime = 3;//`json:"start_time" bson:"start_time"`
+    uint64 EndTime = 4;//`json:"end_time" bson:"end_time"`
+    bool Saved = 5;//`json:"saved" bson:"saved"`
+    string FileId = 6;//`json:"file_id" bson:"file_id"`
+    //Thong tin Audit
+    uint64 CreatedAt = 7;//`json:"created_at" bson:"created_at" audit:"createdAt"`
+    uint64 UpdatedAt = 8;//`json:"updated_at" bson:"updated_at" audit:"updatedAt"`
+    string CreatedBy = 9;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 10;//`json:"updated_by" bson:"updated_by"`
+}
+
+message FileUploadRequest {
+    string FileName = 1;//`json:"file_name"`
+    string ContentType = 2;//`json:"content_type"`
+    bytes Data = 3;//`json:"data"`
+    uint32 Size = 4;//`json:"size"`
+}
+
+message FileDownloadRequest {
+    string FileId = 1;//`json:"file_id"`
+}
+
+message FileDownloadResponse {
+    string FileId = 1;//`json:"file_id"`
+    string FileName = 2;//`json:"file_name"`
+    bytes Data = 3;//`json:"data"`
+}
+
+message SearchFileResponse {
+    repeated File Files = 1;//
+    int32 TotalCount =2;//
+}
+
+service FileService {
+    rpc upload (FileUploadRequest) returns (File);
+    rpc download (FileDownloadRequest) returns (stream FileDownloadResponse);
+    rpc search (search_options.SearchOptions) returns (SearchFileResponse);
+}
+
+message SearchGeoInfoResponse {
+    repeated GeoInfo GeoInfos = 1;//
+    int32 TotalCount =2;//
+}
+
+service GeoInfoService {
+    rpc create (GeoInfo) returns (GeoInfo);
+    rpc search (search_options.SearchOptions) returns (SearchGeoInfoResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}

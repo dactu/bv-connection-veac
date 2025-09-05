@@ -1,0 +1,18 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message Motor {
+    Transaction transaction = 1;
+
+    uint64 id                = 2;
+    bool is_connected        = 3;
+    uint64 uptime            = 4; // Uptime in seconds
+    float pan                = 5; // degree
+    float tilt               = 6; // degree
+	
+    bool is_running          = 10;
+    string description       = 11;  // Device description
+}

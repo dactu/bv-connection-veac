@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+import "vea/api/common.proto";
+
+package vea.api.optical_electronic;
+option go_package = "vea/api/optical_electronic";
+
+// System
+message OeStatus {
+    uint32 station_id = 1;
+    uint32 device_id = 2;
+    bool thermal_camera_status = 3;
+    bool daylight_camera_status = 4;
+    bool laser_status = 5;
+    bool gimbal_status = 6;
+    float pan_value = 7;
+    float tilt_value = 8;
+    uint32 camera_zoom_value = 9;
+    uint32 camera_focus_value = 10;
+    string gps_value = 11;
+    float fpga_temp_value = 12;
+    float ambient_temp_value = 13;
+    OeStationConfig config = 14;
+    OeMode mode = 15;
+}
+
+message OeStationConfig {
+    uint32 station_id = 1;
+    uint32 device_id = 2;
+    double lat = 3;
+    double lon = 4;
+    double altitude = 5;
+    double azi_offset = 6;
+    double ele_offset_1 = 7;
+    double ele_offset_2 = 8;
+    double ele_offset_3 = 9;
+    
+    Transaction transaction  = 20;
+}
+
+message OeMode {
+    enum Mode {
+        NONE = 0;
+        MANUAL = 1;
+        SEMI_AUTO= 2;
+        AUTO = 3;
+    }
+
+    uint32 station_id = 1;
+    uint32 device_id = 2;
+    Mode mode = 3;
+    
+    Transaction transaction  = 20;
+}

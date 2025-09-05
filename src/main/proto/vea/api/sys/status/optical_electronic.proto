@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/optical_electronic/msg.proto";
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message OpticalElectronic {
+    Transaction transaction                         = 1;
+    uint64 id                                       = 2;   // Device Id in Station
+    bool is_connected                               = 3;   // True - device is connected
+    uint64 uptime                                   = 4;   // Uptime in seconds from device startup
+    vea.api.optical_electronic.OeStatus   status    = 5;
+
+    string description                              = 15;  // Device description
+}

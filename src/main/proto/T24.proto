@@ -1,0 +1,592 @@
+syntax = "proto3";
+
+package track;
+
+option go_package = "pkg/pb";
+
+import "SearchOptions.proto";
+import "PatchOptions.proto";
+
+////////================================================================================
+//1. Thông tin qũy đạo bay
+message Track {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string TrackNumber = 2;//`json:"track_number" bson:"track_number"`
+    double Altitude = 3;//`json:"altitude" bson:"altitude"`
+    double Latitude = 4;//`json:"latitude" bson:"latitude"`
+    double Longitude = 5;//`json:"longitude" bson:"longitude"`
+
+    uint32 AircraftType = 6;//`json:"aircraft_type" bson:"aircraft_type"`
+    uint32 Identification = 7;//`json:"identification" bson:"identification"`
+    uint32 Quantity = 8;//`json:"quantity" bson:"quantity"`
+    uint32 Model = 9;//`json:"model" bson:"model"`
+    uint32 Bv5TargetType = 10;//`json:"bv5_target_type" bson:"bv5_target_type"`
+    double Bv5FreqMin = 11;//`json:"bv5_freq_min" bson:"bv5_freq_min"`
+    double Bv5FreqMax = 12;//`json:"bv5_freq_max" bson:"bv5_freq_max"`
+    double Velocity = 13;//`json:"velocity" bson:"velocity"`
+    double Heading = 14;//`json:"heading" bson:"heading"`
+    repeated string GnvGiamSat = 15;//`json:"gnv_giam_sat" bson:"gnv_giam_sat"`
+    repeated string GnvTieuDiet = 16;//`json:"gnv_tieu_diet" bson:"gnv_tieu_diet"`
+    string Quality = 17;//`json:"quality" bson:"quality"`
+
+    repeated TrackSourceInfo Sources = 18;//`json:"sources" bson:"sources"`
+    TrackSourceInfo Source = 19;//`json:"source" bson:"source"`
+
+    string Note = 20;//`json:"note" bson:"note"`
+    bool DestroyedTag = 21;//`json:"destroyed_tag" bson:"destroyed_tag"`
+    string AlertTag = 22;//`json:"alert_tag" bson:"alert_tag"`
+     //Thong tin Audit
+    uint64 CreatedAt = 23;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 24;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 25;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 26;//`json:"updated_by" bson:"updated_by"`
+}
+
+message TrackSourceInfo {
+    string Name = 1;//`json:"name" bson:"name"`
+    string Number = 2;//`json:"number" bson:"number"`
+}
+message SearchTrackResponse {
+    repeated Track Tracks = 1;//
+    int32 TotalCount =2;//
+}
+message TrackStatistic {
+    repeated int32 AllIdList = 1;//`json:"all_id_list" bson:"all_id_lists"`
+    int32 StatisticIndex = 2;//`json:"statistic_index" bson:"statistic_index"`
+    string SourceId = 3;//`json:"source_id" bson:"source_id"`
+
+    int64 Timestamp = 4;//`json:"timestamp" bson:"timestamp"`
+    repeated string UuidList = 5;//`json:"uuid_list" bson:"uuid_list"`
+}
+
+service TrackService {
+    rpc create (Track) returns (Track);
+    rpc upsert (Track) returns (Track);
+    rpc search (search_options.SearchOptions) returns (SearchTrackResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+    rpc delete (search_options.SearchOptions) returns (SearchTrackResponse);
+    rpc statistic (TrackStatistic) returns (TrackStatistic);
+}
+
+
+
+////////================================================================================
+//2. Yêu cầu hợp nhất quỹ đạo
+enum TRACK_CORRELATE_TYPE {
+    TCT_UNKNOWN = 0;
+    TCT_CORRELATE = 1;
+    TCT_DECORRELATE = 2;
+}
+
+message TrackCorrelate {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string PrimaryTrackId = 2;//`json:"primary_object_id" bson:"primary_object_id"`
+    string SecondaryTrackId = 3;//`json:"secondary_object_id" bson:"secondary_object_id"`
+    string SeconadryTrackSourceId = 4;//`json:"secondary_object_source_id" bson:"secondary_object_source_id"`
+    string TargetTrackId = 5;//`json:"target_object_id" bson:"target_object_id"`
+    TRACK_CORRELATE_TYPE Type = 6;//`json:"type" bson:"type"`
+    //Thong tin Audit
+    uint64 CreatedAt = 7;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 8;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 9;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 10;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchTrackCorrelateResponse {
+    repeated TrackCorrelate TrackCorrelates = 1;//
+    int32 TotalCount =2;//
+}
+
+service TrackCorrelateService {
+    rpc create (TrackCorrelate) returns (TrackCorrelate);
+    rpc search (search_options.SearchOptions) returns (SearchTrackCorrelateResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+////////================================================================================
+//3. Lịch sử quỹ đạo
+message TrackHistory {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string TrackNumber = 2;//`json:"object_number" bson:"object_number"`
+    string TrackId = 3;//`json:"track_id" bson:"track_id"`
+    double Altitude = 4;//`json:"altitude" bson:"altitude"`
+    double Latitude = 5;//`json:"latitude" bson:"latitude"`
+    double Longitude = 6;//`json:"longitude" bson:"longitude"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 7;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 8;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 9;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 10;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchTrackHistoryResponse {
+    repeated TrackHistory TrackHistories = 1;//
+    int32 TotalCount =2;//
+}
+
+service TrackHistoryService {
+    rpc create (TrackHistory) returns (TrackHistory);
+    rpc search (search_options.SearchOptions) returns (SearchTrackHistoryResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+    rpc delete (search_options.SearchOptions) returns (SearchTrackHistoryResponse);
+}
+
+
+////////================================================================================
+//4. Điểm đo xa quang điện tử
+message QdtPoint {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string QdtSourceId = 2;//`json:"qdt_source_id" bson:"qdt_source_id"`
+    double Altitude = 3;//`json:"altitude" bson:"altitude"`
+    double Latitude = 4;//`json:"latitude" bson:"latitude"`
+    double Longitude = 5;//`json:"longitude" bson:"longitude"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 6;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 7;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 8;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 9;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchQdtPointResponse {
+    repeated QdtPoint QdtPoints = 1;//
+    int32 TotalCount =2;//
+}
+
+service QdtPointService {
+    rpc create (QdtPoint) returns (QdtPoint);
+    rpc search (search_options.SearchOptions) returns (SearchQdtPointResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+    rpc delete (search_options.SearchOptions) returns (SearchQdtPointResponse);
+}
+
+
+////////================================================================================
+//5. Thông tin khí tài
+///Status
+////Unknow=0
+////Ready=1
+////NotReady=2
+////Error=3
+message KhiTai {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Name = 2;//`json:"name" bson:"name"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    uint32 Status = 4;//`json:"status" bson:"status"`
+    double Altitude = 5;//`json:"altitude" bson:"altitude"`
+    double Latitude = 6;//`json:"latitude" bson:"latitude"`
+    double Longitude = 7;//`json:"longitude" bson:"longitude"`
+    repeated string GroupMember = 8;//`json:"group_member" bson:"group_member"`
+    string BV5Member = 9;//`json:"bv5_member" bson:"bv5_member"`
+    bool IsShow = 10;//`json:"is_show" bson:"is_show"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 11;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 12;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 13;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 14;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchKhiTaiResponse {
+    repeated KhiTai KhiTais = 1;//
+    int32 TotalCount =2;//
+}
+
+service KhiTaiService {
+    rpc create (KhiTai) returns (KhiTai);
+    rpc search (search_options.SearchOptions) returns (SearchKhiTaiResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+//5.1 Thông tin trạng thái khí tài
+///SSCD
+////Unknown=0
+////SSCD=1
+////CSSCD=2
+
+///CheDoHoatDong
+////Unknown=0
+////ChienDau=1
+////HuanLuyen=2
+////KiemTraChucNang=3
+////CamNgay=4
+////Camnhiet=5
+
+///CheDoAnhNhiet
+////Unknown=0
+////NhietTrang=1
+////NhietDen=2
+////NhietMau=3
+
+///TrangThaiBatBamMucTieu
+////Unknown=0
+////KhongBatBam=1
+////ChoBatBam=2
+////DangBatBam=3
+
+message TrangThaiKhiTai {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Name = 2;//`json:"name" bson:"name"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    uint32 SSCD = 4;//`json:"sscd" bson:"sscd"`
+    uint32 CheDoHoatDong = 5;//`json:"che_do_hoat_dong" bson:"che_do_hoat_dong"`
+    double StationAltitude = 6;//`json:"station_altitude" bson:"station_altitude"`
+    double StationLatitude = 7;//`json:"station_latitude" bson:"station_latitude"`
+    double StationLongitude = 8;//`json:"station_longitude" bson:"station_longitude"`
+    uint32 TocDoQuet = 9;//`json:"toc_do_quet" bson:"toc_do_quet"`
+    double CongSuatPhat = 10;//`json:"cong_suat_phat" bson:"cong_suat_phat"`
+    double CuLyCanhGioi = 11;//`json:"cu_ly_canh_gioi" bson:"cu_ly_canh_gioi"`
+    uint32 CheDoAnhNhiet = 12;//`json:"che_do_anh_nhiet" bson:"che_do_anh_nhiet"`
+    uint32 MucZoomHienTai = 13;//`json:"muc_zoom_hien_tai" bson:"muc_zoom_hien_tai"`
+    uint32 KetQuaDoXa = 14;//`json:"ket_qua_do_xa" bson:"ket_qua_do_xa"`
+    uint32 TrangThaiBatBamMucTieu = 15;//`json:"trang_thai_bat_bam_muc_tieu" bson:"trang_thai_bat_bam_muc_tieu"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 16;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 17;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 18;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 19;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchTrangThaiKhiTaiResponse {
+    repeated TrangThaiKhiTai TrangThaiKhiTais = 1;//
+    int32 TotalCount =2;//
+}
+
+service TrangThaiKhiTaiService {
+    rpc create (TrangThaiKhiTai) returns (TrangThaiKhiTai);
+    rpc search (search_options.SearchOptions) returns (SearchTrangThaiKhiTaiResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+
+////////================================================================================
+//6. Vùng phủ
+message Coverage {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string KhiTaiId = 2;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    uint32 Height = 4;//`json:"height" bson:"height"`
+    string DetectionGeometryJson = 5;//`json:"detection_geometry_json" bson:"detection_geometry_json"`
+    string BlindGeometryJson = 6;//`json:"blind_geometry_json" bson:"blind_geometry_json"`
+    double CenterAltitude = 7;//`json:"center_altitude" bson:"center_altitude"`
+    double CenterLatitude = 8;//`json:"center_latitude" bson:"center_latitude"`
+    double CenterLongitude = 9;//`json:"center_longitude" bson:"center_longitude"`
+    double DetectionRadius = 10;//`json:"detection_radius" bson:"detection_radius"`
+    double BlindRadius = 11;//`json:"blind_radius" bson:"blind_radius"`
+    bool IsShow = 12;//`json:"is_show" bson:"is_show"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 13;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 14;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 15;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 16;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchCoverageResponse {
+    repeated Coverage Coverages = 1;//
+    int32 TotalCount =2;//
+}
+
+service CoverageService {
+    rpc create (Coverage) returns (Coverage);
+    rpc search (search_options.SearchOptions) returns (SearchCoverageResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+
+////////================================================================================
+//7. Nguồn quang điện tử stream
+message QdtStreamSource {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string KhiTaiId = 2;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    string StreamURI = 4;//`json:"stream_uri" bson:"stream_uri"`
+
+     //Thong tin Audit
+    uint64 CreatedAt = 12;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 13;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 14;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 15;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchQdtStreamSourceResponse {
+    repeated QdtStreamSource QdtStreamSources = 1;//
+    int32 TotalCount =2;//
+}
+
+service QdtStreamSourceService {
+    rpc create (QdtStreamSource) returns (QdtStreamSource);
+    rpc search (search_options.SearchOptions) returns (SearchQdtStreamSourceResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+////////================================================================================
+//8. Mệnh lệnh
+//Type
+////Unknown=0
+////SucSao=1
+////BamSat=2
+////TieuDiet=3
+////NhanDangDich=8
+//Status
+////Unknown=0
+////Created=1
+////Received=2
+////Operating=3
+////Done=4
+////Error=5
+////Cancel=6
+////KhiTai_Cancel=7
+message Command {
+    string ID = 1;//`json:"id" bson:"_id"`
+    uint32 Status = 2;//`json:"status" bson:"status"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    string KhiTaiId = 4;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    string KiTaiName = 5;//`json:"khi_tai_name" bson:"khi_tai_name"`
+    double KhiTaiLatitude = 6;//`json:"khi_tai_latitude" bson:"khi_tai_latitude"`
+    double KhiTaiLongitude = 7;//`json:"khi_tai_longitude" bson:"khi_tai_longitude"`
+    string TrackId = 8;//`json:"track_id" bson:"track_id"`
+    string TrackNumber = 9;//`json:"track_number" bson:"track_number"`
+    double TrackLatitude = 10;//`json:"track_latitude" bson:"track_latitude"`
+    double TrackLongitude = 11;//`json:"track_longitude" bson:"track_longitude"`
+    double AngleStart = 12;//`json:"angle_start" bson:"angle_start"`
+    double AngleEnd = 13;//`json:"angle_end" bson:"angle_end"`
+    string TrackNumberKhitai = 14;//`json:"track_number_khi_tai" bson:"track_number_khi_tai"`
+     //Thong tin Audit
+    uint64 CreatedAt = 15;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 16;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 17;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 18;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchCommandResponse {
+    repeated Command Commands = 1;//
+    int32 TotalCount =2;//
+}
+
+service CommandService {
+    rpc create (Command) returns (Command);
+    rpc search (search_options.SearchOptions) returns (SearchCommandResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+////////================================================================================
+//8.1. Phản hồi
+//Type
+////Unknown=0
+////Created=1
+////Received=2
+////Operating=3
+////Done=4
+////Error=5
+////Cancel=6
+////KhiTai_Cancel=7
+message Response {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string CommandId = 2;//`json:"command_id" bson:"command_id"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    string Note = 4;//`json:"note" bson:"note"`
+     //Thong tin Audit
+    uint64 CreatedAt = 5;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 6;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 7;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 17;//`json:"updated_by" bson:"updated_by"`
+}
+message SearchResponseResponse {
+    repeated Response Responses = 1;//
+    int32 TotalCount =2;//
+}
+
+service ResponseService {
+    rpc create (Response) returns (Response);
+    rpc search (search_options.SearchOptions) returns (SearchResponseResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+////////================================================================================
+//9. Vùng chế áp
+message VungCheAp {
+    string ID = 1;//`json:"id" bson:"_id"`
+    uint32 Status = 2;//`json:"status" bson:"status"`
+    uint32 Type = 3;//`json:"type" bson:"type"`
+    string KhiTaiId = 4;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    string KiTaiName = 5;//`json:"khi_tai_name" bson:"khi_tai_name"`
+    double KhiTaiLatitude = 6;//`json:"khi_tai_latitude" bson:"khi_tai_latitude"`
+    double KhiTaiLongitude = 7;//`json:"khi_tai_longitude" bson:"khi_tai_longitude"`
+    double Distance = 8;//`json:"distance" bson:"distance"`
+    double AngleStart = 9;//`json:"angle_start" bson:"angle_start"`
+    double AngleEnd = 10;//`json:"angle_end" bson:"angle_end"`
+     //Thong tin Audit
+    uint64 CreatedAt = 12;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 13;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 14;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 15;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchVungCheApResponse {
+    repeated VungCheAp VungCheAps = 1;//
+    int32 TotalCount =2;//
+}
+
+service VungCheApService {
+    rpc create (VungCheAp) returns (VungCheAp);
+    rpc search (search_options.SearchOptions) returns (SearchVungCheApResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+
+////////================================================================================
+//9.1. Vùng trinh sát
+// status=1; Khong hoat dong
+// status=3; hoat dong
+message VungTrinhSat {
+    string ID = 1;//`json:"id" bson:"_id"`
+    uint32 Status = 2;//`json:"status" bson:"status"`
+    uint32 IDReQuat = 3;//`json:"id_re_quat" bson:"id_re_quat"`
+    string TramId = 4;//`json:"tram_id" bson:"tram_id"`
+    string TramName = 5;//`json:"tram_name" bson:"tram_name"`
+    double TramLatitude = 6;//`json:"tram_latitude" bson:"tram_latitude"`
+    double TramLongitude = 7;//`json:"tram_longitude" bson:"tram_longitude"`
+    string KhiTaiId = 8;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    string KhiTaiName = 9;//`json:"khi_tai_name" bson:"khi_tai_name"`
+    double GocPhuongVi = 10;//`json:"goc_phuong_vi" bson:"goc_phuong_vi"`
+    double GocTa = 11;//`json:"goc_ta" bson:"goc_ta"`
+    double TanSoTrungTam = 12;//`json:"tan_so_trung_tam" bson:"tan_so_trung_tam"`
+    double BangThong = 13;//`json:"bang_thong" bson:"bang_thong"`
+    double Distance = 14;//`json:"distance" bson:"distance"`
+    double AngleStart = 15;//`json:"angle_start" bson:"angle_start"`
+    double AngleEnd = 16;//`json:"angle_end" bson:"angle_end"`
+     //Thong tin Audit
+    uint64 CreatedAt = 17;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 18;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 19;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 20;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchVungTrinhSatResponse {
+    repeated VungTrinhSat VungTrinhSats = 1;//
+    int32 TotalCount =2;//
+}
+
+service VungTrinhSatService {
+    rpc create (VungTrinhSat) returns (VungTrinhSat);
+    rpc search (search_options.SearchOptions) returns (SearchVungTrinhSatResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+    rpc delete (search_options.SearchOptions) returns (SearchVungTrinhSatResponse);
+}
+
+
+
+
+
+////////================================================================================
+//Type=0 --> Unknow
+//Type=1 --> Canh bao Vi Phạm
+//Type=2 --> Cảnh báo Nguy Hiểm
+//3.1. Cảnh báo
+message TrackAlert {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string TrackId = 2;//`json:"track_id" bson:"track_id"`
+    string TrackNumber = 3;//`json:"track_number" bson:"track_number"`
+    double TrackAltitude = 4;//`json:"tracK_altitude" bson:"tracK_altitude"`
+    double TrackLatitude = 5;//`json:"track_latitude" bson:"track_latitude"`
+    double TrackLongitude = 6;//`json:"track_longitude" bson:"track_longitude"`
+    string KhiTaiId = 7;//`json:"khi_tai_id" bson:"khi_tai_id"`
+    string KhiTaiName = 8;//`json:"khi_tai_name" bson:"khi_tai_name"`
+    double KhiTaiAltitude = 9;//`json:"khi_tai_altitude" bson:"khi_tai_altitude"`
+    double KhiTaiLatitude = 10;//`json:"khi_tai_latitude" bson:"khi_tai_latitude"`
+    double KhiTaiLongitude = 11;//`json:"khi_tai_longitude" bson:"khi_tai_longitude"`
+    double Distance = 12;//`json:"distance" bson:"distance"`
+    bool Enable = 13;//`json:"enable" bson:"enable"`
+    bool SoundAlarm = 14;//`json:"sound_alarm" bson:"sound_alarm"`
+    int32 Type = 15;//`json:"type" bson:"type"`
+     //Thong tin Audit
+    uint64 CreatedAt = 16;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 17;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 18;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 19;//`json:"updated_by" bson:"updated_by"`
+}
+
+message SearchTrackAlertResponse {
+    repeated TrackAlert TrackAlerts = 1;//
+    int32 TotalCount =2;//
+}
+
+service TrackAlertService {
+    rpc create (TrackAlert) returns (TrackAlert);
+    rpc search (search_options.SearchOptions) returns (SearchTrackAlertResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+    rpc delete (search_options.SearchOptions) returns (SearchTrackAlertResponse);
+}
+
+enum SYSTEM_NOTIFICATION_TYPE {
+    SNT_UNKNOWN = 0;
+    SNT_INFO = 1;
+    SNT_WARNING = 2;
+    SNT_ERROR = 3;
+}
+
+message Notification {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Content = 2;//`json:"content" bson:"content"`
+    SYSTEM_NOTIFICATION_TYPE Type = 3;//`json:"type" bson:"type"`
+    string SoundId = 4;//`json:"sound_id" bson:"sound_id"`
+    bool Active = 5;//`json:"active" bson:"active"`
+    //Thong tin Audit
+    uint64 CreatedAt = 6;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 7;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 8;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 9;//`json:"updated_by" bson:"updated_by"`
+}
+
+
+message SearchNotificationResponse {
+    repeated Notification Notifications = 1;//
+    int32 TotalCount =2;//
+}
+
+service NotificationService {
+    rpc create (Notification) returns (Notification);
+    rpc search (search_options.SearchOptions) returns (SearchNotificationResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}
+
+enum MapLayerType {
+    MLT_UNKNOWN = 0;
+    MLT_MULTI_POINT = 1;
+    MLT_MULTI_LINE = 2;
+    MLT_MULTI_POLYGON = 3;
+}
+
+message MapLayer {
+    string ID = 1;//`json:"id" bson:"_id"`
+    string Name = 2;//`json:"name" bson:"name"`
+    MapLayerType Type = 3;//`json:"type" bson:"type"`
+    string File = 4;//`json:"file" bson:"file"`
+    bool IsShow = 5;//`json:"is_show" bson:"is_show"`
+    //Thong tin Audit
+    uint64 CreatedAt = 6;//`json:"created_at" bson:"created_at"  audit:"createdAt"`
+    uint64 UpdatedAt = 7;//`json:"updated_at" bson:"updated_at"  audit:"updatedAt"`
+    string CreatedBy = 8;//`json:"created_by" bson:"created_by"`
+    string UpdatedBy = 9;//`json:"updated_by" bson:"updated_by"`
+}
+
+
+message SearchMapLayerResponse {
+    repeated MapLayer MapLayers = 1;//
+    int32 TotalCount =2;//
+}
+
+service MapLayerService {
+    rpc create (MapLayer) returns (MapLayer);
+    rpc search (search_options.SearchOptions) returns (SearchMapLayerResponse);
+    rpc patch (patch_options.PatchOptions) returns (patch_options.PatchResponse);
+}

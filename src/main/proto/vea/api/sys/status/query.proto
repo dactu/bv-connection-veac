@@ -1,0 +1,9 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message Query {
+    Transaction transaction = 1;
+}

@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.c4i.vq2.messages";
+option java_outer_classname = "RadarCancellationTrackMessageProto";
+
+service RadarCancellationTrackService {
+   	//using for module DataConverter send msg to DataCollection msg
+	rpc sendRadarCancellationTrack(RadarCancellationTrackMessage) returns(google.protobuf.Empty) {}
+
+	//using for module external want to get msg from module DataCollection
+	rpc getAllRadarCancellationTrack(google.protobuf.Empty) returns (stream RadarCancellationTrackMessage) {}
+}
+
+message RadarCancellationTrackMessage {
+
+//	uint64 source_id = 1; 	 // change to source name
+	string source_name = 1;  // use to identity data source
+	double time = 2;
+	int32 track_number = 3;
+	//TrackStatus track_status = 4;
+}
+/*
+message TrackStatus {
+	enum SourceOfAltitude {
+		NoSrc = 0;
+		GNSS = 1;
+		Radar3D = 2;
+		Triangulation = 3;
+		HeightFromCoverage = 4;
+		SpeedLookupTable = 5;
+		HeightFinder = 6;
+		DefaultHeight = 7;
+		ManuallyEntered_Other = 8;
+	}
+		
+	enum FOE_FRI {
+		Unknown = 0;
+		Reply = 1;
+		NoReply = 2;
+		NoRequest = 3;
+	}
+	
+	enum TrackingStatus {
+		NoTracked = 0;
+		LostTracked = 1;
+		Tracked = 2;
+	}
+
+	enum TargetGroup {
+		OwnFriendlyAircraft = 0;
+		EnemyFoeAircraft = 1;
+		DomesticAircraft = 2;
+		InternationalAircraft = 3;
+		TransitAircraft = 4;
+		NoGroup = 5;
+	}
+
+	enum TargetType {
+		NoType = 0;
+		StrategicBombingAircraft = 1;
+		AttackAircraft = 2;
+		FighterAircraft = 3;
+		Helicopter = 4;
+		MilitaryTransportAircraft = 5;
+		RefuellingAircraft = 6;
+		ReconnaissanceAircraft = 7;
+		ECMAircraft = 8;
+		TrainingAircraft = 9;
+		Balloon = 10;
+		ReconnaissanceAndAirCommandAircraft = 11;
+		CuiseMissile = 12;
+		BallisticMissile = 13;
+		CivilAviationAircraft = 14;
+		UAV = 15;
+		Bomber = 16;
+		PPSOW = 17;
+	}
+	
+	enum FightingKind {
+		NotKind = 0;
+		LaunchOneBullet = 1;
+		LaunchBullets = 2;
+	}
+	
+	enum FightingStatus {
+		NotStt = 0;
+		NoFighting = 1;
+		ControlByHand = 2;
+		AutomaticControl = 3;
+		BulletIsFlying = 4;
+		CancelBullet = 5;
+	}
+
+	bool mon = 1;				//value: 0, 1, 
+	bool spi = 2;				//value: 0, 1, 
+	bool mrh = 3;				//value: 0, 1, 
+	SourceOfAltitude src = 4;	
+	bool cnf = 5;				//value: 0, 1, 
+	
+	bool sim = 6;				//value: 0, 1, 
+	bool tse = 7;				//value: 0, 1, 
+	bool tsb = 8;				//value: 0, 1, 
+	bool fpc = 9;				//value: 0, 1, 
+	bool jam = 10;				//value: 0, 1, 
+	int32 ntg = 11;
+	bool ama = 12;				//value: 0, 1, 
+	FOE_FRI iff = 13;
+	bool me = 14;				//value: 0, 1, 
+	bool mi = 15;				//value: 0, 1, 
+	TrackingStatus ts = 16;
+	TargetGroup gt = 17;
+	TargetType tt = 18;
+	FightingKind fk = 19;
+	FightingStatus fs = 20;
+}
+*/
+
+

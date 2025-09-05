@@ -1,0 +1,173 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+package vea.api;
+option go_package = "vea/api";
+
+message Message {
+  Type type                   = 1;
+  uint32 subtype              = 2;
+  google.protobuf.Any payload = 3;
+  Transaction transaction     = 4;
+}
+
+enum Type {
+    TYPE_UNKNOWN        = 0;
+    TYPE_USER           = 1;
+    TYPE_CONNECTION     = 2;
+    TYPE_SYSTEM         = 3;
+    TYPE_DF             = 11;
+    TYPE_TRACKING       = 12;
+    TYPE_IDENTIFICATION = 13;
+    TYPE_JAMMING        = 15;
+    TYPE_RADAR          = 16;
+    TYPE_OE             = 17;
+    TYPE_FUSION         = 18;
+    TYPE_ANTENNA        = 19;
+    TYPE_DRONE          = 20;
+    TYPE_EX_JAMMING     = 25;
+    TYPE_COMMAND	    = 26; // Command & control
+    TYPE_COVERAGE       = 28;
+}
+
+enum SubTypeConnection {
+    SUBTYPE_CONNECTION_UNKNOWN = 0;
+}
+
+message Transaction {
+  uint64 id         = 1;    // Transaction Id for trace log (trace id in open-telemetry API)
+  Error  error      = 2;    // Error
+  uint64 timeout    = 4;    // RPC timeout in milliseconds
+}
+
+message Error {
+    int32 code = 1;
+    string message = 2;
+}
+
+message Time {
+  uint64 second = 1;      /// Unix time in seconds
+  uint64 nano_second = 2; /// Fractional nano second
+}
+
+message DateTime {
+  uint32 year = 1;
+  uint32 month = 2;
+  uint32 day = 3;
+  uint32 hour = 4;
+  uint32 minute = 5;
+  uint32 second = 6;
+  uint64 nano_second = 7; /// Fractional nano second
+}
+
+message Response {
+  Transaction transaction = 1;
+}
+
+message Location {
+  double latitude  = 1;
+  double longitude = 2;
+  double altitude  = 3;
+}
+
+message Rotation {
+  float pan = 1;  // Degree
+  float tilt = 2; // Degree
+}
+
+message CPU {
+  float usage       = 1;  // CPU usage from 0 to 100
+  float temperature = 2;  // CPU's temperature in degree
+}
+
+message Memory {
+  uint64 total_size = 1;  // Total size in byte
+  uint64 free_size  = 2;  // Free size in byte 
+}
+
+message Disk {
+  string mount_point = 1; // Mount point 
+  string device      = 2; // Disk device 
+  uint64 total_size  = 3; // Total size in byte 
+  uint64 free_size   = 4; // Free size in byte 
+  float temperature  = 5; // Temperature in degree
+}
+
+message Network {
+  string ifname  = 1; // Network interface name
+  uint64 tx_size = 2; // Transmitted size in byte 
+  uint64 rx_size = 3; // Received size in byte
+  repeated IPAddress ip_address = 4;    // List IP Address
+  bool up        = 5;   // Is up (running)
+}
+
+message IPAddress  {
+    string address = 1; // IP address
+    string mask    = 2; // Netmask
+}
+
+message DataSource {
+    uint64 station = 1; // Station Id
+    uint64 device  = 2; // Digitizer Id
+    uint64 antenna = 3; // Antenna Channel Id
+    uint64 channel = 4; // Data Channel Id (wide-band, narrow-band 0, narrow-band 1, ...)
+    DeviceType device_type = 5;
+}
+
+enum DeviceType {
+    DeviceType_Digitizer = 0;   // Digitizer
+    DeviceType_Jammer    = 1;   // Jammer
+}
+
+message SetLogLevel {
+
+  enum LogLevel {
+    LOG_LEVEL_TRACE    = 0;
+    LOG_LEVEL_DEBUG    = 1;
+    LOG_LEVEL_INFO     = 2;
+    LOG_LEVEL_WARN     = 3;
+    LOG_LEVEL_ERR      = 4;
+    LOG_LEVEL_CRITICAL = 5;
+    LOG_LEVEL_OFF      = 6;
+  }
+
+  LogLevel log_level = 1;
+}
+
+message ListMetric {
+    repeated Metric metric  = 1; // List metrics
+}
+
+message Metric {
+    uint64              timestamp    = 1; // Timestamp at sampling [ns]
+    map<string, string> variable     = 2; // [metric-name] metric-value
+}
+
+
+enum PowerState {
+    PowerState_Off = 0;
+    PowerState_On = 1;
+    PowerState_Restart = 2;
+}
+
+
+message BuildInfo {
+    string version  = 1;    // Version in semver format or git hash
+    string datetime = 2;    // Built datetime (GMT+7)
+}
+
+message Complex {
+    double real = 1;
+    double imag = 2;
+}
+
+message DoubleMatrixLine {
+    repeated double col = 1;
+}
+message DoubleMatrix {
+    repeated DoubleMatrixLine row = 1;
+}
+
+message FrequencyRange {
+    uint64 frequency = 1;   // [hz]
+    uint64 bandwidth = 2;   // [hz]
+}

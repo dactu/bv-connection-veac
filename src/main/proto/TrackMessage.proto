@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package com.vht.bms.messages;
+
+import "PositionAndVelocity.proto";
+import "TrackInfo.proto";
+
+option java_package = "com.vht.bms.messages.track";
+option java_outer_classname = "TrackMessageProto";
+
+message SourceInfo {
+    string id = 1;
+    int32 source_type = 2;                      // Refer to SourceType in TrackInfoEnum.proto
+    int32 source_level = 3;                     // Refer to SourceLevel in TrackInfoEnum.proto
+}
+
+message TrackMessage {
+    int32 id = 1;
+    int32 target_type = 2;                      // Refer to TargetType in TrackInfoEnum.proto
+    SourceInfo source_info = 3;
+
+    TrackInfo track_info = 4;
+
+    GeodeticPosition geodetic_position = 10;
+    PolarVelocity polar_velocity = 11;
+    PolarPosition polar_position = 12;
+
+    int32 tracking_mode = 15;                   // Refer to TrackingMode in TrackInfoEnum.proto
+    int32 active_mode = 16;                     // Refer to ActiveMode in TrackInfoEnum.proto
+
+    int64 created_timestamp = 20;                // Timestamp when track is created
+    int64 last_updated_timestamp = 21;           // Timestamp when track is updated by a source track
+    int64 timestamp = 22;                        // Timestamp when track's kinematic state (position + velocity) is updated (by a source track or by prediction)
+
+    repeated TrackMessage source_tracks = 30;
+
+    //Additional fields
+    bool no_delete_flag = 50;
+}
+
+message TrackMessages {
+    repeated TrackMessage track_message_list = 1;
+}
+
+message RemovedTrackEventMessage {
+    int32 removed_track_id = 1;
+    SourceInfo source_info = 3;
+    string uuid = 4;
+}
+
+message ManeuverWarning {
+    int32 type = 1; // 1 = SPEED; 2 = HEADING; 3 = ALTITUDE
+    int32 delta = 2;
+    int32 delta_percent = 3; // Value from 0 to 1, equal 0% to 100%
+    int32 timestamp = 4;     // Timestamp when the warning occur
+}
+
+message RemovedTracksEventMessage {
+    repeated int32 removed_track_id_list = 1;
+    SourceInfo source_info = 3;
+    repeated string uuid_list = 4;
+}
+
+message TrackStatisticsMessage {
+    repeated int32 all_id_list = 1;
+    int32 statistic_index = 2;
+    string source_id = 3;
+
+    int64 timestamp = 4;
+    repeated string uuid_list = 5;
+}

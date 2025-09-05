@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package com.vht.bms.messages;
+
+option java_package = "com.vht.bms.messages.track";
+option java_outer_classname = "TrackInfoProto";
+
+import "TrackTag.proto";
+
+message Size {
+    int32 length = 1;
+    int32 width = 2;
+    int32 height = 3;
+}
+
+message AircraftInfo {
+    string mode_3a = 1;		    // Mode 3/A of aircraft: a string of 4-digit
+    string mode_s = 2;		    // Mode S of aircraft: a string of 6 hex-code
+    int32 aircraft_type = 3;    // Refer to AircraftType in TrackInfoEnum.proto
+
+    // Number of aircraft in one formation:
+    // If aircraft in formation fly closely together, sensor with low resolution will see them as one target.
+    // That's why we need this field to identify the real number of aircraft in one target.
+    int32 aircraft_count = 4;
+
+    string special_label = 5;      // Aircraft of important flight (for example: flight of president), often be assigned a label so all operators can recognized it quickly
+}
+
+message VesselInfo {
+    // International Maritime Organization (IMO) number (7-digit).
+    // This info is assigned when a ship is constructed, i.e: it is fixed during the ship's entire life,
+    // unlike MMSI can be changed if the ship owner's change
+    int32 imo_number = 1;
+
+    int32 vessel_type = 2;          // Refer to VesselType in TrackInfoEnum.proto
+    int32 vessel_operation = 3;     // Refer to VesselOperation in TrackInfoEnum.proto
+}
+
+message AISInfo {
+    float to_bow = 1;
+    float to_stern = 2;
+    float to_starboard = 3;
+    float to_port = 4;
+
+    float draught = 5;
+
+    int32 transponder_class = 6;            // Refer to AISTransponderClass in AISEnum.proto
+    int32 position_fixing_device = 7;       // Refer to AISPositionFixingDevice in AISEnum.proto
+    int32 navigation_status = 8;            // Refer to AISNavigationStatus in AISEnum.proto
+
+    int64 eta = 9;                          // timestamp in seconds. NOTE: in AIS protocol, it is format as Month-Day-Hour-Minute in UTC timezone
+
+    bool position_accurate = 10;            // true indicate location accuracy of < 10,
+    int32 special_maneuver_indicator = 11;  // Refer to AISManeuverIndicator AISTransponderClass in AISEnum.proto
+}
+
+message GroundTargetTypeInfo {
+    int32 ground_target_type = 1;
+    int32 ground_target_count = 2;
+}
+
+message GroundTargetInfo {
+    repeated GroundTargetTypeInfo type_infos = 1;
+    int32 damaged_state = 2;                      // Refer to Target.proto
+    int32 portability = 3;
+}
+
+// Contains info related to user's business
+message AdditionalBusinessInfo {
+    repeated int32 group_ids = 1;      // One track can be assigned to multiple groups
+    string note = 2;           // User note about this track
+    bytes data = 3;
+}
+
+message TrackInfo {
+    string name = 1;
+    string call_sign = 2;
+    string country_code = 3;                    // Refer to two letter country code (ISO 3166-1 alpha-2). E.g: "VN", "US", ...
+    int32 friend_foe_state = 4;           // Refer to NavalFriendFoeState in TrackInfoEnum.proto
+
+    Size target_size = 5;
+
+    string departure_location = 6;
+    string arrival_location = 7;                // i.e: destination
+
+    // Maritime Mobile Service Identity (MMSI) is a series of nine digits which is unique for each ship
+    // Because aircraft can also be assigned MMSI so we put it here instead of VesselInfo
+    int32 mmsi = 8;
+    int32 height_source_type = 9;          // Refer to HeightSourceType in TrackInfoEnum.proto
+
+    AISInfo ais_info = 15;
+
+    oneof TargetSpecificInfo {
+        AircraftInfo aircraft_info = 20;
+        VesselInfo vessel_info = 21;
+        GroundTargetInfo ground_target_info = 22;
+    }
+
+    AdditionalBusinessInfo additional_business_info = 26;
+
+    // Additional information of other branchs (AD, AF, NIC, NRC...) will be stored in here.
+    // For example: NRC track info will be defined in NavalRadarTrackTag.proto
+    repeated TrackTag tags = 30;
+
+    // Additional info for TN24 military drill
+    int32 track_quality = 40;
+    double start_radiation_freq = 41;
+    double end_radiation_freq = 42;
+
+    // Enum value
+    // 0 = UNKNOWN;
+    // 1 = NORMAL
+    // 2 = LOST_CONTROL; 3 = LOST_ALTITUDE; 4 = LOST_CONTROL_AND_ALTITUDE;
+    int32 maneuver_status = 43;
+}

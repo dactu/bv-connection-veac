@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/sys/status/station.proto";
+
+package vea.api.sys;
+option go_package = "vea/api/sys";
+
+message Status {
+    Transaction transaction         = 1;
+    repeated status.Station station = 2;
+}

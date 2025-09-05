@@ -1,0 +1,35 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/sys/status/computer.proto";
+import "vea/api/sys/status/controller.proto";
+import "vea/api/sys/status/jammer.proto";
+import "vea/api/sys/status/emp.proto";
+import "vea/api/sys/status/radar.proto";
+import "vea/api/sys/status/optical_electronic.proto";
+
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message Station {
+    Transaction transaction        = 1;
+    uint64 id                      = 2;
+    bool is_connected              = 3;
+    repeated Computer computer     = 4;
+    repeated Controller controller = 5;
+    repeated Jammer jammer         = 6;
+    repeated EMP emp               = 7;
+    repeated Radar radar           = 8;
+    repeated OpticalElectronic optical_electronic = 9;
+
+    StationType type               = 11;
+    string description             = 12;
+    Location location              = 14;
+}
+
+enum StationType {
+    StationType_Infrastructure           = 0;
+    StationType_ContinuousSignalAnalyzer = 1;
+    StationType_Jamming                  = 2;
+    StationType_Radar                    = 3;
+    StationType_OpticalElectronic        = 4;
+}

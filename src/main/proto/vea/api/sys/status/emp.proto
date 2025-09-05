@@ -1,0 +1,18 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/sys/status/motor.proto";
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message EMP {
+    Transaction transaction  = 1;
+
+    uint64 id                = 2;   // Device Id in Station
+    bool is_connected        = 3;   // True - EMP device is connected
+
+    Location location                 = 6;      // Device location (or station location)
+    Motor motor                       = 7;      // Pan-tilt common status
+
+    string description                = 9;      // Device description
+    bool is_jamming                   = 10;     // True - device is in jamming state
+}

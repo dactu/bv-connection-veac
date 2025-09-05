@@ -1,0 +1,77 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+/**
+ * @ref QS.VEA.DSP.Thiết kế thuật toán định hướng nguồn phát tín hiệu v1.2_2021_12_16.pdf
+ * @ref QS.VEAC.DSP.Đánh giá hiệu năng của mô-đun xử lý thông tin_2022_10_03.pdf
+ */
+
+message DOA {
+    DOAIdentity identity = 1;
+    DOAPosition position = 2;
+    DOAVelocity velocity = 3;
+
+    repeated DOATrajectory trajectory = 4;
+    DOATrack track                    = 5;
+
+    Sensor sensor        = 10;  // Replaced by identity.common.sensor
+}
+
+message DOATrack {
+    uint64 track_number     = 1;    // Số hiệu của track (duy nhất)
+    uint64 track_source     = 2;    // Nguồn cung cấp thông tin
+    uint64 track_dbnum      = 3;    // Nhận dạng mục tiêu trong CSDL
+    uint64 timestamp        = 4;    // [ns] Thời gian theo timestamp
+    uint64 birdth_time      = 5;    // [ns] Thời gian bắt đầu
+    uint64 track_time       = 6;    // [ns] Thời gian bắt bám (Từ thời điểm bắt đầu đến hiện tại)
+    uint64 death_time       = 7;    // [ns] Thời gian kết thúc
+    IRRAD_TYPE irrad_type   = 8;    // Loại phát xạ
+    FILTER_TYPE filter_type = 9;    // Loại bộ lọc
+    repeated uint32 track_status    = 10;   // Mảng trạng thái định vị của tracks
+    repeated double predict_states  = 11;   // Trạng thái dự đoán của mục tiêu
+    repeated double update_states   = 12;   // Trạng thái cập nhật của mục tiêu
+    DoubleMatrix predict_covmat     = 13;   // Ma trận tương quan dự đoán
+    DoubleMatrix update_covmat      = 14;   // Ma trận tương quan cập nhật
+    DoubleMatrix process_covmat     = 15;   //
+}
+
+message DOATrajectory {
+    uint64 timestamp        = 1;    // [ns] Tick timer của mục tiêu
+    DOAIdentity identity    = 2;    // Mảng định danh của mục tiêu
+    DOAPosition position    = 3;    // Mảng vị trí của mục tiêu
+    DOAVelocity velocity    = 4;    // Mảng tốc độ của mục tiêu
+}
+
+message DOAIdentity {
+    Identity common      = 1;
+    DOAFeatures features = 2;
+}
+
+message DOAPosition {
+    Position common     = 1;
+
+    double azimuth              = 2;    // [deg] Phương vị từ trạm tham chiếu
+    double elevation            = 3;    // [deg] Góc tà từ trạm tham chiếu
+    repeated double vec_doas    = 4;    // [deg] Vector DOAs (phương vị và góc tà)
+    DoubleMatrix arr_doas       = 5;    // [deg] Mảng DOAs từ các điểm ước lượng
+}
+message DOAVelocity {
+    Velocity common             = 1;
+
+    double azimuth              = 2;    // [deg] Tốc độ theo phương vị
+    double elevation            = 3;    // [deg] Tốc độ theo góc tà
+    repeated double veloc_doas  = 4;    // [m/s?] Tốc độ theo cả phương vị và góc tà
+}
+
+message DOAFeatures {
+    repeated double sec_pows = 1;   // [dBm] Công suất tín hiệu tại các phần tử của ăng-ten DF-3D (48 / 64 phan tu)
+    repeated uint64 bdw_idxs = 2;   // Mảng các chỉ số BDWs gắn liền với mục tiêu. Liên kết với mảng BDWs đầu vào
+    repeated double mean_fcs = 3;   // [hz] Mảng FCs gắn liền với mục tiêu
+    repeated double mean_bws = 4;   // [HZ] Mảng BWs gắn liền với mục tiêu
+    float  iden_reliability  = 5;   // Độ tin cậy nhận dạng
+    string iden_description  = 6;   // Loại mục tiêu nhận dạng
+    uint64 iden_detected_time = 7;  // Thời gian nhận dạng
+}

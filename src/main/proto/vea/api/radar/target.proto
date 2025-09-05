@@ -1,0 +1,21 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+import "vea/api/data/target/rad.proto";
+package vea.api.radar;
+option go_package = "vea/api/radar";
+
+message RadarTarget {
+    uint64 id                    = 1;
+	
+    vea.api.data.target.RadarType type = 12;
+
+    vea.api.data.target.RAD core = 30;
+}
+
+message TargetList {
+    uint32 station_id          = 1;
+    uint32 device_id           = 2;
+    repeated RadarTarget list  = 3;
+}
+

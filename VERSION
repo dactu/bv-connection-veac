@@ -1,0 +1,3 @@
+D_APP=bv-connect-bv5
+D_ARC=amd64
+D_VERSION=$(git describe --tags)

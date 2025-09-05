@@ -1,0 +1,85 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+import "google/protobuf/any.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message Drone {
+    DroneIdentity identity = 1;
+    DronePosition position = 2;
+    DroneVelocity velocity = 3;
+
+    repeated Location trajectory = 4;
+}
+
+message DroneList {
+    repeated Drone drone = 1;
+}
+
+message DroneIdentity {
+    Identity common      = 1;
+    DroneFeatures features = 2;
+}
+message DronePosition {
+    Position common             = 1;
+}
+message DroneVelocity {
+    Velocity common         = 1;
+    double velocity_north   = 6;            // [m/s]
+    double velocity_east    = 7;            // [m/s]
+    double velocity_up      = 8;            // [m/s]
+}
+
+
+message DroneFeatures {
+    string serial_number        = 1;      // Drone Serial number
+    float  phone_app_latitude   = 9;      // Controller location [deg]
+    float  phone_app_longitude  = 10;     // Controller location [deg]
+    float  home_longitude       = 11;     // Controller location [deg]
+    float  home_latitude        = 12;     // Controller location [deg]
+    string product_name         = 13;     // Drone product name
+    uint32 product_type         = 14;     // DJI product type
+    uint64 gps_ts               = 17;     // [ns]
+    uint64 receiver_ts          = 18;     // Timestamp from receiver [clock of receiver]
+    IRRAD_TYPE irrad_type       = 19;     // Use IRRAD_TYPE_DELETE to mark target is deleted
+    DroneProtocol protocol      = 20;     // Protocol
+}
+
+
+message DroneProtocol {
+    DroneProtocolType protocol_type = 1;
+    string protocol_description     = 2;
+    DroneProtocolModulation modulation_type = 3;
+    string modulation_description   = 4;
+    google.protobuf.Any detail      = 5;
+}
+
+enum DroneProtocolModulation {
+    DroneProtocolModulation_Unknown = 0;
+    DroneProtocolModulation_OFDM    = 1;
+    DroneProtocolModulation_2FSK    = 2;
+    DroneProtocolModulation_4FSK    = 3;
+    DroneProtocolModulation_BPSK    = 4;
+    DroneProtocolModulation_QPSK    = 5;
+    DroneProtocolModulation_16QAM   = 6;
+    DroneProtocolModulation_64QAM   = 7;
+};
+
+enum DroneProtocolType {
+    DroneProtocolType_Unknown   = 0;
+    DroneProtocolType_OcuSync   = 1;
+    DroneProtocolType_OcuSync_2 = 2;
+    DroneProtocolType_OcuSync_3 = 3;
+    DroneProtocolType_Wifi      = 4;
+    DroneProtocolType_LightBridge = 5;
+    DroneProtocolType_Parrot      = 6;
+    DroneProtocolType_Yuneec      = 7;
+    DroneProtocolType_Autel       = 8;
+    DroneProtocolType_Zigbee      = 9;
+    DroneProtocolType_Bluetooth   = 10;
+    DroneProtocolType_NTSC_PAL    = 11;
+    DroneProtocolType_OcuSync_3_Plus = 12;
+    DroneProtocolType_OcuSync_4      = 13;
+    DroneProtocolType_RemoteId    = 14;     // For remote id protocol, detail = vea.api.data.target.remote_id.RemoteId
+}

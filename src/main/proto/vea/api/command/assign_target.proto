@@ -1,0 +1,47 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.command;
+option go_package = "vea/api/command";
+
+message CommandList{
+  Transaction transaction 	= 1;
+  repeated Command command      = 2;  
+}
+
+enum AssignTargetType {
+  AT_UNKNOWN 	= 0;
+  AT_BS    	= 1; // bam sat
+  AT_SS 	= 2; // suc sao
+  AT_Jamming  	= 3; // gay nhieu
+  AT_EMP 	= 4; // che ap
+}
+
+enum TypeModule{
+  RADAR		= 0;  // chi thi trinh sat cho radar
+  EOS 		= 1;  // chi thi trinh sat cho QDT
+  TCDT 		= 2;  // chi thi tieu diet cho TCDT
+}
+
+enum AssignTargetState {
+  AT_CT 	= 0;  //chi thi
+  AT_CANCEL   	= 1;  //huy chi thi
+}
+
+enum ACK {
+  ACK_CANCEL 	= 0;    //huy khong nhan lenh
+  ACK_NOTDO 	= 1;    //da nhan lenh nhung chua thuc hien
+  ACK_DOING 	= 2;	//da nhan lenh va dang thuc hien
+  ACK_DONE 	= 3;	//da hoan thanh yeu cau chi thi
+}
+
+message Command{
+  int32 cmdId                	= 1;	// Dung cho ban tin phan hoi
+  TypeModule module     	= 2;    // loai khi tai C4I chi thi
+  AssignTargetType cmdType	= 3;	// Loai chi thi
+  vea.api.data.target.Identity targetId		= 4;	// Dinh dang cua muc tieu
+  /*Vi tri bat dau & ket thuc de phuc vu chi thi suc sao, doi voi cac loai chi thi vao 1 diem -> startPos = endPos*/
+  vea.api.data.target.Position startPos		= 5;
+  vea.api.data.target.Position endPos		= 6;
+  ACK ack 			= 7;    // Dung cho ban tin phan hoi	  
+}

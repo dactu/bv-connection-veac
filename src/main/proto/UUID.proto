@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.vht.bms.messages;
+
+option java_package = "com.vht.bms.messages";
+option java_outer_classname = "UUIDProto";
+
+message UUID {
+    int64 most_significant_bits = 1;
+    int64 least_significant_bits = 2;
+}

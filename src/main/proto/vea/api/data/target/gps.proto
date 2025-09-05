@@ -1,0 +1,27 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/data/target/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+message GPS {
+    GPSIdentity identity = 1;
+    GPSPosition position = 2;
+    GPSVelocity velocity = 3;
+
+    Sensor sensor        = 10;  // ignore
+}
+
+message GPSIdentity {
+    Identity common      = 1;
+    GPSFeatures features = 2;
+}
+message GPSPosition {
+    Position common      = 1;
+}
+message GPSVelocity {
+    Velocity common      = 1;
+}
+
+message GPSFeatures {
+}

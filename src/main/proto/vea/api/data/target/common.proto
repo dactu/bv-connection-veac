@@ -1,0 +1,99 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+package vea.api.data.target;
+option go_package = "vea/api/data/target";
+
+// LLA : Latitude-Longitude-Altitude
+// DAE : Distance-Azimuth-Elevation
+// XYZ : X-Y-Z
+
+message Identity {
+    // [ns] Timestamp gắn tại khi mục tiêu hình thành
+    // DOA: Timestamp gắn từ mô-đun DF (bộ thu)
+    // DOE: Timestamp gắn tại hệ thống QĐT
+    // RAD: Timestamp gắn tại hệ thống Radar
+    // TLAT: Timestamp gắn từ mô-đun TLAT (bộ thu)
+    // FUSED: Timestamp đưa ra mục tiêu hợp nhất
+    // GPS: Timestamp từ mô-đun giải mã GPS
+    uint64 timestamp        = 1;
+    uint64 serv_timestamp   = 2;    // [ns] Timestamp tại thời điểm đầu vào mô-đun xu ly
+    TARG_TYPE targ_type     = 3;    // Loại mục tiêu (DOA, DOE, RAD, TLAT, DRONE, FUSION)
+    uint64 targ_iden        = 4;    // Nhan dang muc tieu mục tiêu. @see RADTargIden
+    uint64 targ_num         = 5;    // Số hiệu mục tiêu
+    uint64 ant_iden         = 6;    // Định danh của ăng-ten
+
+    Sensor sensor           = 10;
+}
+
+enum TRACKING_TYPE {
+    TRACKING_TYPE_2D = 0;		// 2 toa do Latitude-Longitude hoac Distance-Azimuth
+    TRACKING_TYPE_3D = 1;		// 3 toa do Latitude-Longitude-Altitude hoac Distance-Azimuth-Elevation
+}
+
+message Position {
+    POS_TYPE pos_type           = 1;    // Loại vị trí điểm dấu (DOA hoặc POS
+    repeated double pos_meas    = 2;    // Vị trí mục tiêu trong một hệ tọa độ
+    DoubleMatrix cov_meas       = 3;    // Ma trận sai số định vị mục tiêu
+    repeated double pos_lla     = 4;    // [deg] Vị trí mục tiêu trong hệ tọa độ LLA (Latitude-Longitude-Altitude)
+    DoubleMatrix cov_lla        = 5;    // [deg] Ma trận sai số định vị mục tiêu
+    repeated double pos_xyz     = 6;    // [m] Vị trí mục tiêu trong hệ tọa độ XYZ
+    DoubleMatrix cov_xyz        = 7;    // [m] Ma trận sai số định vị mục tiêu
+    repeated double pos_dae     = 8;    // Vị trí mục tiêu trong hệ tọa độ cực (Distance-Azimuth-Elevation)
+    DoubleMatrix cov_dae        = 9;    // Ma trận sai số định vị mục tiêu
+
+    TRACKING_TYPE tracking_type = 10;	  // 2D hoac 3D
+}
+
+message Velocity {
+    repeated double vel_xyz     = 1;    // [m/s] Tốc độ mục tiêu trong hệ tọa độ XYZ
+    repeated double cov_xyz     = 2;    // [m/s] Tốc độ mục tiêu trong hệ tọa độ XYZ
+    repeated double vel_dae     = 3;    // Tốc độ mục tiêu trong hệ tọa độ cực
+    repeated double cov_dae     = 4;    // Tốc độ mục tiêu trong hệ tọa độ cực
+
+    double speed                = 5;    // [m/s]
+    double heading              = 6;    // ?
+    double vertical             = 7;    // ?
+}
+
+enum TARG_TYPE {
+    TARG_TYPE_NONE  = 0;
+    TARG_TYPE_DOA   = 1;    // DOA target
+    TARG_TYPE_DOE   = 2;    // DOE target
+    TARG_TYPE_RAD   = 3;    // Radar target
+    TARG_TYPE_TLAT  = 4;    // TLAT target
+    TARG_TYPE_FUSED = 5;    // FUSION target
+    TARG_TYPE_GPS   = 100;  // GPS target
+    TARG_TYPE_DRONE = 6;    // Drone target
+}
+enum POS_TYPE {
+    POS_TYPE_DAE = 0;
+    POS_TYPE_XYZ = 1;
+    POS_TYPE_MIX = 2;
+}
+enum IRRAD_TYPE {
+    IRRAD_TYPE_FALSE_ALARM  = 0;    // False Alarm
+    IRRAD_TYPE_TENTATIVE    = 1;    // Tentative Track
+    IRRAD_TYPE_NORMAL       = 2;    // Normal Track
+    IRRAD_TYPE_NOIRRAD      = 3;    // No-irradation Track
+    IRRAD_TYPE_INGRAVE      = 4;    // Ingrave Track
+    IRRAD_TYPE_DELETE	    = 5;    // Delete Track
+}
+enum FILTER_TYPE {
+    FILTER_TYPE_KALMAN      = 0;    //
+    FILTER_TYPE_SKF         = 1;
+}
+
+message Sensor  {
+    Location location = 1;  // Vi tri sensor
+    DataSource source = 2;  // Station id, device id, ...
+}
+
+enum RadarType {
+   UNKNOWN = 0;
+   RAD_MCX = 1;
+   RAD_U2X = 2;
+   RAD_U3K = 3;
+   RAD_SRS = 4;
+   RAD_C4I = 5;     // Target from C4I
+}
+

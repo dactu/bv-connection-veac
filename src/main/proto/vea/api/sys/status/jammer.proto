@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "vea/api/common.proto";
+import "vea/api/sys/status/motor.proto";
+package vea.api.sys.status;
+option go_package = "vea/api/sys/status";
+
+message Jammer {
+    Transaction transaction  = 1;
+
+    uint64 id                = 2;   // Device Id in Station
+    bool is_connected        = 3;   // True - device is connected
+    uint64 uptime            = 4;   // Uptime in seconds from device startup
+	
+    Motor motor              = 11;          // Motor pan, tilt
+
+    string description       = 15;  // Device description
+
+    bool is_jamming          = 17;  // True - device is in jamming state
+	
+    repeated JammerChannel channel  = 19;
+}
+
+message JammerChannel {
+    uint64 id                       = 1;    // Channel Id, from 1
+    bool is_running                 = 2;    // Channel is running
+
+    JammerChannelType type          = 3;
+    repeated JammerChannelMode mode = 4;    // Danh sach dai tan so phat cua bo gay nhieu
+}
+message JammerChannelMode {
+    uint64 frequency                = 1;    // Frequency [hz]
+    uint64 bandwidth                = 2;    // Bandwidth [hz]
+}
+enum JammerChannelType {
+    JammerChannelType_Normal        = 0;    // Gay nhieu thong tin
+    JammerChannelType_GNSS          = 1;    // Gay nhieu GNSS
+}
+
